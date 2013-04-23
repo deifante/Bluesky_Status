@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Mongo Status{% endblock %}
+
+{% block content %}
+  <p>Enter the iStock id you are interested in</p>
+  <form action="{% url 'mongo_status:get_status' %}" method="get">
+    <input type="text" name="assetId" id="assetId">
+    <input type="submit" value="Search" />
+  </form>
+
+  {% comment %} Some #'s regarding the status {% endcomment %}
+  {% include 'mongo_status/snippets/status_snippet.html' %}
+
+  {% if asset %}
+    <h3>Attributes of Note</h3>
+    {% comment %} Current asset Status {% endcomment %}
+    {% if status_snippet %}
+      {% include status_snippet %}
+    {% else %}
+      <p>Unknown Asset Status: &quot;{{ asset.partnerData.getty.status }}&quot;</p>
+    {% endif %}
+
+    {% comment %} Getty ID {% endcomment %}
+    {% if asset.partnerData.getty.partnerId %}
+      <p>The <strong>Getty Id</strong> for this file: {{ asset.partnerData.getty.partnerId }}</p>
+    {% endif %}
+
+    {% comment %} Files migrated manually {% endcomment %}
+    {% if asset.partnerData.getty.legacyMigration %}
+      <p>This is a <strong>Legacy Migration</strong> file.</p>
+    {% endif %}
+
+    {% comment %} Specially chosen illustrations {% endcomment %}
+    {% if asset.partnerData.getty.handSelected %}
+      <p>This is a <strong>Hand Selected</strong> file.</p>
+    {% endif %}
+
+    {% comment %} 'Frozen' Files currently being migrated {% endcomment %}
+    {% if asset.partnerData.getty.migrated %}
+      <p>This is a <strong>migrating</strong> file.</p>
+    {% endif %}
+
+    {% comment %} Is this guy going to be deactivated? {% endcomment %}
+    {% if asset.isMarkedForPull %}
+      <p>This file is marked for <strong>deactivation!</strong></p>
+    {% endif %}
+
+    <h3>Raw Mongo Asset</h3>
+    <pre>{{ pretty_asset }}</pre>
+  {% elif query_value %}
+    <p>Couldn't find record for &quot;{{ query_value }}&quot;</p>
+  {% endif %}
+{% endblock %}

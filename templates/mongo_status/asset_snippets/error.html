@@ -1,0 +1,8 @@
+<p>This record has currently <strong>error</strong> status. Assets with complete error have had a problem along the way.</p>
+
+{% if asset.partnerData.getty.message %}
+  <h2>Error Message</h2>
+  <pre>{{ asset.partnerData.getty.message }}</pre>
+{% else %}
+  <p>No error message found.</p>
+{% endif %}

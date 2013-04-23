@@ -1,0 +1,32 @@
+{% load humanize %}
+<h3>System Status</h3>
+<table>
+  <tr>
+    <th>Status</th>
+    <th># of records</th>
+  </tr>
+  <tr>
+    <td>Complete</td>
+    <td>{{ status_counts.complete|intcomma }}</td>
+  </tr>
+  <tr>
+    <td>Error</td>
+    <td>{{ status_counts.error|intcomma }}</td>
+  </tr>
+  <tr>
+    <td>Pending</td>
+    <td>{{ status_counts.pending|intcomma }}</td>
+  </tr>
+  <tr>
+    <td>Processing</td>
+    <td>{{ status_counts.processing|intcomma }}</td>
+  </tr>
+  <tr>
+    <td>Undetermined</td>
+    <td>{{ status_counts.undetermined|intcomma }}</td>
+  </tr>
+  <tr>
+    <td><strong>Total</strong></td>
+    <td>{{ status_counts.total|intcomma }}</td>
+  </tr>
+</table>
