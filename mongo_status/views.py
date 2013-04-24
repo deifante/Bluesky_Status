@@ -1,16 +1,18 @@
 import pprint
 
-# from django.http import HttpResponse
 from django.shortcuts import render
 
 from mongo_access import get_asset, get_status_counts
+from mysql_access import is_partner_program
 
 def index(request):
     return render(request, 'mongo_status/index.html', {'status_counts': get_status_counts()})
 
 def get_status(request):
     asset = None
-    response_dict = {'query_value':request.GET['assetId'], 'status_counts': get_status_counts()}
+    response_dict = {'query_value':request.GET['assetId'],
+                     'is_partner_program':is_partner_program(int(request.GET['assetId'])),
+                     'status_counts': get_status_counts()}
     try:
         assetId = int(request.GET['assetId'])
         asset = get_asset(assetId)

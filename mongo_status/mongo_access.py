@@ -14,10 +14,10 @@ def get_status_counts():
     assets_collection = get_assets_collection()
     total = assets_collection.count();
 
-    counts = {'complete'  : assets_collection.find({'partnerData.getty.status':'complete'}).count(),
-              'error'     : assets_collection.find({'partnerData.getty.status':'error'}).count(),
-              'pending'   : assets_collection.find({'partnerData.getty.status':'pending'}).count(),
-              'processing': assets_collection.find({'partnerData.getty.status':'processing'}).count()}
+    counts = {'complete'  : assets_collection.find({'partnerData.getty.status':'complete'}, slave_okay=True, await_data=False).count(),
+              'error'     : assets_collection.find({'partnerData.getty.status':'error'}, slave_okay=True, await_data=False).count(),
+              'pending'   : assets_collection.find({'partnerData.getty.status':'pending'}, slave_okay=True, await_data=False).count(),
+              'processing': assets_collection.find({'partnerData.getty.status':'processing'}, slave_okay=True, await_data=False).count()}
     counts['undetermined'] = total - counts['complete'] - counts['error'] - counts['pending'] - counts['processing']
     counts['total'] = total
     return counts

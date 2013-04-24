@@ -25,6 +25,13 @@
       <p>The <strong>Getty Id</strong> for this file: {{ asset.partnerData.getty.partnerId }}</p>
     {% endif %}
 
+    {% comment %} Is this file in the partner program? {% endcomment %}
+    {% if is_partner_program %}
+      <p>This asset is <strong>in</strong> the <strong>Partner Program</strong>.</p>
+    {% else %}
+      <p>This asset is <strong>not</strong> in the <strong>Partner Program</strong>.</p>
+    {% endif %}
+
     {% comment %} Files migrated manually {% endcomment %}
     {% if asset.partnerData.getty.legacyMigration %}
       <p>This is a <strong>Legacy Migration</strong> file.</p>
