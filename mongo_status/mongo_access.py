@@ -1,3 +1,5 @@
+from django.core.cache import cache
+
 from pymongo import Connection
 
 def get_assets_collection():
@@ -11,6 +13,10 @@ def get_asset(assetId):
     return assets_collection.find_one({'assetId':assetId})
 
 def get_status_counts():
+    cached_status_counts = cache.get('mongo_get_status_counts')
+    if cached_status_counts:
+        return cached_status_counts
+
     assets_collection = get_assets_collection()
     total = assets_collection.count();
 
@@ -20,4 +26,5 @@ def get_status_counts():
               'processing': assets_collection.find({'partnerData.getty.status':'processing'}, slave_okay=True, await_data=False).count()}
     counts['undetermined'] = total - counts['complete'] - counts['error'] - counts['pending'] - counts['processing']
     counts['total'] = total
+    cache.set('mongo_get_status_counts', counts, 60 * 5)
     return counts

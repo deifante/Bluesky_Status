@@ -1,9 +1,11 @@
 import pprint
 
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
 
 from mongo_access import get_asset, get_status_counts
 from mysql_access import is_partner_program
+
 
 def index(request):
     return render(request, 'mongo_status/index.html', {'status_counts': get_status_counts()})
