@@ -6,4 +6,7 @@ def is_partner_program(assetId):
     query = 'select Collections from AbstractFile where ID = %d' % assetId
     cursor.execute(query)
     data = cursor.fetchone()
-    return data[0].find('GettyDistribution') != -1
+    if (data):
+        return data[0].find('GettyDistribution') != -1
+    else:
+        return 0

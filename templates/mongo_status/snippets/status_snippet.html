@@ -6,19 +6,19 @@
     <th># of records</th>
   </tr>
   <tr>
-    <td>Complete</td>
+    <td><a href="{% url 'mongo_status:complete_details' 'complete' %}">Complete</a></td>
     <td>{{ status_counts.complete|intcomma }}</td>
   </tr>
   <tr>
-    <td>Error</td>
+    <td><a href="{% url 'mongo_status:complete_details' 'error' %}">Error</a></td>
     <td>{{ status_counts.error|intcomma }}</td>
   </tr>
   <tr>
-    <td>Pending</td>
+    <td><a href="{% url 'mongo_status:complete_details' 'pending' %}">Pending</a></td>
     <td>{{ status_counts.pending|intcomma }}</td>
   </tr>
   <tr>
-    <td>Processing</td>
+    <td><a href="{% url 'mongo_status:complete_details' 'processing' %}">Processing</a></td>
     <td>{{ status_counts.processing|intcomma }}</td>
   </tr>
   <tr>
@@ -30,3 +30,4 @@
     <td>{{ status_counts.total|intcomma }}</td>
   </tr>
 </table>
+<p>Generated at {{ status_counts.generation_time }}</p>

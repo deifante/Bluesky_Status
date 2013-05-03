@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}{{ status|capfirst }} Status Details{% endblock %}
+
+{% block content %}
+<h3>{{ status|capfirst }} Records</h3>
+<table>
+  <tr>
+    <th>Status</th>
+    <th># of records</th>
+  </tr>
+  <tr>
+    <td>Updates</td>
+    <td>{{ status_details.updates|intcomma }}</td>
+  </tr>
+  <tr>
+    <td>New</td>
+    <td>{{ status_details.new|intcomma }}</td>
+  </tr>
+  <tr>
+    <td>Deletes</td>
+    <td>{{ status_details.delete|intcomma }}</td>
+  </tr>
+  <tr>
+    <td>Special</td>
+    <td>{{ status_details.special|intcomma }}</td>
+  </tr>
+  <tr>
+    <td>Legacy Migration</td>
+    <td>{{ status_details.legacy_migration|intcomma }}</td>
+  </tr>
+  <tr>
+    <td>Currently Migrating</td>
+    <td>{{ status_details.migrated|intcomma }}</td>
+  </tr>
+  <tr>
+    <td>Hand Selected</td>
+    <td>{{ status_details.hand_selected|intcomma }}</td>
+  </tr>    
+  <tr>
+    <td>Total</td>
+    <td>{{ status_details.total|intcomma }}</td>
+  </tr>
+</table>
+
+{% if status_details.newest.date %}
+  <p><strong>Newest</strong> {{ status }} asset, {{ status_details.newest.assetId }} at {{ status_details.newest.date }}</p>
+{% endif %}
+{% if status_details.oldest.date %}
+  <p><strong>Oldest</strong> {{ status }} asset, {{ status_details.oldest.assetId }} at {{ status_details.oldest.date }}</p>
+{% endif %}  
+
+<p>Generated at {{ status_details.generation_time }}</p>
+{% endblock %}

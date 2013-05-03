@@ -3,7 +3,7 @@ import pprint
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 
-from mongo_access import get_asset, get_status_counts
+from mongo_access import get_asset, get_status_counts, get_status_details
 from mysql_access import is_partner_program
 
 
@@ -34,3 +34,7 @@ def get_status(request):
         response_dict['pretty_asset'] = pretty_asset
 
     return render(request, 'mongo_status/index.html', response_dict)
+
+def complete_details(request, status):
+    response_dict = {'status': status, 'status_details': get_status_details(status)}
+    return render(request, 'mongo_status/status_details.html', response_dict)
