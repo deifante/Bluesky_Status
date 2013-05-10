@@ -5,18 +5,15 @@ from pymongo import Connection, ASCENDING, DESCENDING
 from django.core.cache import cache
 
 from mongo_status.models import StatusCount, DetailedStatus
-
+from Bluesky_Status.settings import MONGO_HOST
 class MongoAccess:
     """
     Simple class for getting the information I want out of mongo.
     """
 
-    def __init__(self, connection_ip = '127.0.0.1'):
+    def __init__(self, connection_ip = MONGO_HOST):
         """
         Connect to mongo and get a reference to the assets collection.
-        127.0.0.1                 # local
-        10.2.241.213              #  dev
-        cf-mongo3.istockphoto.com # live
         """
         # Connection is 'deprecated' on the online pymongo docs, but the
         # replacement class MongoClient, doesn't seem to be available for me

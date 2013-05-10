@@ -21,6 +21,14 @@ DATABASES = {
     }
 }
 
+# Mongo host will determine the host of the mongo host that we will be doing all
+# our requests to. Only host for now. Everything I currently connect to uses
+# the default mongo port.
+MONGO_HOST = '127.0.0.1'
+# 127.0.0.1                 # local
+# 10.2.241.213              # dev
+# cf-mongo3.istockphoto.com # live
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
