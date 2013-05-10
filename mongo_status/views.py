@@ -3,21 +3,22 @@ import pprint
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 
-from mongo_access import get_asset, get_status_counts, get_status_details
+from mongo_access import MongoAccess
 from mysql_access import is_partner_program
 
-
 def index(request):
-    return render(request, 'mongo_status/index.html', {'status_counts': get_status_counts()})
+    mongo_access = MongoAccess()
+    return render(request, 'mongo_status/index.html', {'status_counts': mongo_access.get_status_counts()})
 
 def get_status(request):
     asset = None
+    mongo_access = MongoAccess()
     response_dict = {'query_value':request.GET['assetId'],
                      'is_partner_program':is_partner_program(int(request.GET['assetId'])),
-                     'status_counts': get_status_counts()}
+                     'status_counts': mongo_access.get_status_counts()}
     try:
         assetId = int(request.GET['assetId'])
-        asset = get_asset(assetId)
+        asset = mongo_access.get_asset(assetId)
         response_dict['asset'] = asset
 
         if asset and asset['partnerData']['getty']['status'] in ['processing', 'pending', 'complete', 'error']:
@@ -36,5 +37,6 @@ def get_status(request):
     return render(request, 'mongo_status/index.html', response_dict)
 
 def complete_details(request, status):
-    response_dict = {'status': status, 'status_details': get_status_details(status)}
+    mongo_access = MongoAccess()
+    response_dict = {'status': status, 'status_details': mongo_access.get_status_details(status)}
     return render(request, 'mongo_status/status_details.html', response_dict)
