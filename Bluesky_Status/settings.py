@@ -21,9 +21,9 @@ DATABASES = {
     }
 }
 
-# Mongo host will determine the host of the mongo host that we will be doing all
-# our requests to. Only host for now. Everything I currently connect to uses
-# the default mongo port.
+# Mongo host will determine the host of the mongo server that we will be doing
+# all our requests to. Only specifying host for now. Everything I currently
+# connect to uses the default mongo port.
 MONGO_HOST = '127.0.0.1'
 # 127.0.0.1                 # local
 # 10.2.241.213              # dev

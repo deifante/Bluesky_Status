@@ -35,7 +35,7 @@ class MongoAccess:
         """
         return self.assets_collection.find_one({'assetId':assetId})
 
-    def get_status_counts(self):
+    def get_status_counts(self, use_cache = True):
         """
         There are 4 statuses that records are meant to be in the assets
         collection, complete, error, pending and processing.
@@ -46,9 +46,13 @@ class MongoAccess:
         Right now this data is cached for 14 min because it takes a little
         while to get this data and it's probably not a good idea to be stressing
         systems with simple reporting when they have 'real' work to do.
+
+        There is a direct cache control on this method because more than one
+        view uses this method. It is also used for generating data points
+        separate from web requests.
         """
         cached_status_counts = cache.get('mongo_get_status_counts')
-        if cached_status_counts:
+        if cached_status_counts and use_cache:
             return cached_status_counts
 
         total = self.assets_collection.count();
