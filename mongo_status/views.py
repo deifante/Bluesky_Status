@@ -1,16 +1,28 @@
 import pprint
 
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page
 
+from Bluesky_Status.settings import MONGO_HOST
 from mongo_access import MongoAccess
 from mysql_access import is_partner_program
 
+from mongo_status.models import StatusCount, DetailedStatus
+
 def index(request):
-    mongo_access = MongoAccess()
-    return render(request, 'mongo_status/index.html', {'status_counts': mongo_access.get_status_counts()})
+    """
+    Retrieves the most recent status counts for the configured connection.
+
+    The data used to be queried from Mongo on request until I was annoyed
+    @ how long it takes. Now the data collation process is done via cron.
+    Now all this has to do is retrieve results via models.
+    """
+    status_counts = StatusCount.objects.filter(connection=MONGO_HOST).latest()
+    return render(request, 'mongo_status/index.html', {'status_counts': status_counts})
 
 def get_status(request):
+    """
+    Get detailed information on a specific file ID.
+    """
     asset = None
     mongo_access = MongoAccess()
     response_dict = {'query_value':request.GET['assetId'],
@@ -37,6 +49,9 @@ def get_status(request):
     return render(request, 'mongo_status/index.html', response_dict)
 
 def complete_details(request, status):
-    mongo_access = MongoAccess()
-    response_dict = {'status': status, 'status_details': mongo_access.get_status_details(status)}
+    """
+    Get detailed information on a particular status.
+    """
+    status_details = DetailedStatus.objects.filter(connection=MONGO_HOST, status=status).latest()
+    response_dict = {'status': status, 'status_details': status_details}
     return render(request, 'mongo_status/status_details.html', response_dict)
