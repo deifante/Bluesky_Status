@@ -2,17 +2,20 @@
 {% block title %}Mongo Status{% endblock %}
 
 {% block content %}
-  <p>Enter the iStock id you are interested in</p>
-  <form action="{% url 'mongo_status:get_status' %}" method="get">
-    <input type="text" name="assetId" id="assetId">
-    <input type="submit" value="Search" />
-  </form>
+  <div class="row">
+    <div class="span9">
+      <form class="form-search offset3" action="{% url 'mongo_status:get_status' %}" method="get">
+        <input class="search-query span4" type="text" name="assetId" id="assetId" placeholder="Enter the iStock id you are interested in">
+        <input type="submit" value="Search" class="btn btn-primary" />
+      </form>
+    </div>
+  </div>
 
   {% comment %} Some #'s regarding the status {% endcomment %}
   {% include 'mongo_status/snippets/status_snippet.html' %}
 
   {% if asset %}
-    <h3>Attributes of Note</h3>
+    <h1>Attributes of Note</h1>
     {% comment %} Current asset Status {% endcomment %}
     {% if status_snippet %}
       {% include status_snippet %}
@@ -52,7 +55,7 @@
       <p>This file is marked for <strong>deactivation!</strong></p>
     {% endif %}
 
-    <h3>Raw Mongo Asset</h3>
+    <h1>Raw Mongo Asset</h1>
     <pre>{{ pretty_asset }}</pre>
   {% elif query_value %}
     <p>Couldn't find record for &quot;{{ query_value }}&quot;</p>
