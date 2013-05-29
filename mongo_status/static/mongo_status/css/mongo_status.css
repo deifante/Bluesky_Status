@@ -49,3 +49,10 @@
 {
   color:#3498DB;
 }
+.card
+{
+   min-height:105px;
+   padding:15px;
+   color:#ffffff;
+   margin:10px;
+}
