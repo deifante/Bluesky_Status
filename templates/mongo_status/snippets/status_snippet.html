@@ -1,33 +1,47 @@
 {% load humanize %}
-<h1>System Status</h1>
-<table class="table">
-  <tr>
-    <th><h2>Status</h2></th>
-    <th><h2># of records</h2></th>
-  </tr>
-  <tr>
-    <td><a href="{% url 'mongo_status:complete_details' 'complete' %}">Complete</a></td>
-    <td class="text-success">{{ status_counts.complete|intcomma }}</td>
-  </tr>
-  <tr>
-    <td><a href="{% url 'mongo_status:complete_details' 'error' %}">Error</a></td>
-    <td class="text-error">{{ status_counts.error|intcomma }}</td>
-  </tr>
-  <tr>
-    <td><a href="{% url 'mongo_status:complete_details' 'pending' %}">Pending</a></td>
-    <td class="text-info">{{ status_counts.pending|intcomma }}</td>
-  </tr>
-  <tr>
-    <td><a href="{% url 'mongo_status:complete_details' 'processing' %}">Processing</a></td>
-    <td class="text-warning">{{ status_counts.processing|intcomma }}</td>
-  </tr>
-  <tr>
-    <td>Undetermined</td>
-    <td>{{ status_counts.undetermined|intcomma }}</td>
-  </tr>
-  <tr>
-    <td><strong>Total</strong></td>
-    <td>{{ status_counts.total|intcomma }}</td>
-  </tr>
-</table>
-<p><small>Generated at {{ status_counts.generation_time }}</small></p>
+<div class="row">
+  <div class="span12">
+    <h1>System Status</h1>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12">
+    <table class="table">
+      <tr>
+        <th><h2>Status</h2></th>
+        <th><h2># of records</h2></th>
+      </tr>
+      <tr>
+        <td><a href="{% url 'mongo_status:complete_details' 'complete' %}">Complete</a></td>
+        <td class="text-complete">{{ status_counts.complete|intcomma }}</td>
+      </tr>
+      <tr>
+        <td><a href="{% url 'mongo_status:complete_details' 'error' %}">Error</a></td>
+        <td class="text-error">{{ status_counts.error|intcomma }}</td>
+      </tr>
+      <tr>
+        <td><a href="{% url 'mongo_status:complete_details' 'pending' %}">Pending</a></td>
+        <td class="text-pending">{{ status_counts.pending|intcomma }}</td>
+      </tr>
+      <tr>
+        <td><a href="{% url 'mongo_status:complete_details' 'processing' %}">Processing</a></td>
+        <td class="text-processing">{{ status_counts.processing|intcomma }}</td>
+      </tr>
+      <tr>
+        <td>Undetermined</td>
+        <td class="text-undetermined">{{ status_counts.undetermined|intcomma }}</td>
+      </tr>
+      <tr>
+        <td><strong>Total</strong></td>
+        <td><strong>{{ status_counts.total|intcomma }}</strong></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12">
+    <p class="text-right"><small>Generated at {{ status_counts.generation_time }}</small></p>
+  </div>
+</div>  

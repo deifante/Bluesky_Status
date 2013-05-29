@@ -1,0 +1,51 @@
+.text-pending
+{
+  color:#3498db;
+}
+.text-complete
+{
+  color:#2ecc71;
+}
+
+/* The logical overlap here (web error vs bluesky error) is small enough to ignore */
+.text-error 
+{
+  color:#e74c3c;
+}
+.text-processing
+{
+  color:#F39C12;
+}
+.text-undetermined
+{
+  color:#7F8C8D;
+}
+/* Detailed status colours */
+.text-update
+{
+  color:#1ABC9C;
+}
+.text-new
+{
+  color:#2ECC71;
+}
+.text-delete
+{
+  color:#E74C3C;
+}
+.text-special
+{
+  color:#9B59B6;
+}
+.text-legacy-migration
+{
+  color:#E67E22;
+}
+.text-currently-migrating
+{
+  color:#F1C40F;
+}
+.text-hand-selected
+{
+  color:#3498DB;
+}
