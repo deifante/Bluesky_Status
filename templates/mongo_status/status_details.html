@@ -67,12 +67,18 @@
 </div>
 
 <div class="row">
+  <div class="span12">
+    <div id="statusDetailsGraph"></div>
+  </div>
+</div>
+
+<div class="row">
   <div class="span2 palette-turquoise card">
     <p>UPDATES</p>
     <p>Send changes to an existing asset</p>
   </div>
   <div class="span2 palette-emerland card">
-    <p>NEW</P>
+    <p>NEW</p>
     <p>Provide a new asset to Getty</p>
   </div>
   <div class="span2 palette-alizarin card">
@@ -96,4 +102,40 @@
     <p>Files selected for Bluesky by an iStock employee</p>
   </div>
 </div>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+  // Load the Visualization API and the piechart package.
+  google.load('visualization', '1.0', {'packages':['corechart']});
+//   // Set a callback to run when the Google Visualization API is loaded.
+  google.setOnLoadCallback(drawStatusDetailsChart);
+
+  function drawStatusDetailsChart()
+  {
+    var data = new google.visualization.DataTable();
+    data.addColumn('datetime', 'Date');
+    data.addColumn('number', 'Updates');
+    data.addColumn('number', 'New');
+    data.addColumn('number', 'Deletes');
+    data.addColumn('number', 'Special');
+    data.addColumn('number', 'Legacy Migration');
+    data.addColumn('number', 'Currently Migrating');
+    data.addColumn('number', 'Hand Selected');
+
+    data.addRows([
+      {% for data_point in historical_data %}
+        [new Date('{{ data_point.generation_time|date:"r" }}'), {{ data_point.updates }}, {{ data_point.new }}, {{ data_point.delete }}, {{ data_point.special }}, {{ data_point.legacy_migration }}, {{ data_point.migrated }}, {{ data_point.hand_selected }}],
+      {% endfor %}
+    ]);
+    var options = {
+      title: 'Historical Data',
+      width: 940,
+      height: 400,
+      'colors':['#1ABC9C', '#2ECC71', '#E74C3C', '#9B59B6', '#E67E22', '#F1C40F', '#3498DB']
+    };
+    var chart = new google.visualization.LineChart(document.getElementById('statusDetailsGraph'));
+    chart.draw(data, options);
+ }
+</script>
 {% endblock %}

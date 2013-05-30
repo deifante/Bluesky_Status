@@ -17,7 +17,8 @@ def index(request):
     Now all this has to do is retrieve results via models.
     """
     status_counts = StatusCount.objects.filter(connection=MONGO_HOST).latest()
-    return render(request, 'mongo_status/index.html', {'status_counts': status_counts})
+    historical_status = StatusCount.objects.filter(connection=MONGO_HOST).order_by('-generation_time')
+    return render(request, 'mongo_status/index.html', {'status_counts': status_counts, 'historical_status':historical_status})
 
 def get_status(request):
     """
@@ -25,9 +26,11 @@ def get_status(request):
     """
     asset = None
     mongo_access = MongoAccess()
+    historical_status = StatusCount.objects.filter(connection=MONGO_HOST).order_by('-generation_time')
     response_dict = {'query_value':request.GET['assetId'],
                      'is_partner_program':is_partner_program(int(request.GET['assetId'])),
-                     'status_counts': mongo_access.get_status_counts()}
+                     'status_counts': mongo_access.get_status_counts(),
+                     'historical_status':historical_status}
     try:
         assetId = int(request.GET['assetId'])
         asset = mongo_access.get_asset(assetId)
@@ -53,5 +56,7 @@ def complete_details(request, status):
     Get detailed information on a particular status.
     """
     status_details = DetailedStatus.objects.filter(connection=MONGO_HOST, status=status).latest()
-    response_dict = {'status': status, 'status_details': status_details}
+    # I'm not super convinced that I want all of them, but for now there are only 3 days of data.
+    historical_data = DetailedStatus.objects.filter(connection=MONGO_HOST, status=status).order_by('-generation_time')
+    response_dict = {'status': status, 'status_details': status_details, 'historical_data': historical_data}
     return render(request, 'mongo_status/status_details.html', response_dict)
