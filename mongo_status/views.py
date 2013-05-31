@@ -16,7 +16,10 @@ def index(request):
     @ how long it takes. Now the data collation process is done via cron.
     Now all this has to do is retrieve results via models.
     """
-    status_counts = StatusCount.objects.filter(connection=MONGO_HOST).latest()
+    try:
+        status_counts = StatusCount.objects.filter(connection=MONGO_HOST).latest()
+    except StatusCount.DoesNotExist:
+        status_counts = None
     historical_status = StatusCount.objects.filter(connection=MONGO_HOST).order_by('-generation_time')
     return render(request, 'mongo_status/index.html', {'status_counts': status_counts, 'historical_status':historical_status})
 

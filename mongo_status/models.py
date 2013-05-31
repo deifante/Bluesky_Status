@@ -17,7 +17,7 @@ class StatusCount(models.Model):
     total = models.BigIntegerField(default=0, help_text='A count of all the records in mongo')
 
     def __unicode__(self):
-        return 'Status count generated @ %s' % self.generation_time.strftime('%Y-%m-%d %H-%M-S')
+        return 'Status count generated @ %s. complete:%d error:%d pending:%d processing:%d total:%d' % (self.generation_time.strftime('%Y-%m-%d %H-%M-S'), self.complete, self.error, self.pending, self.pending)
 
     class Meta:
         ordering = ['connection', 'generation_time']
