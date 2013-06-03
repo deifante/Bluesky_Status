@@ -3,8 +3,14 @@
 
 {% block title %}{{ status|capfirst }} Status Details{% endblock %}
 
-{% block content %}
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="{% url 'mongo_status:index' %}">System Status</a> <span class="divider">/</span></li>
+  <li class="active">{{ status|capfirst }} Status Details</li>
+</ul>
+{% endblock %}
 
+{% block content %}
 <div class="row">
   <div class="span12">
     <h1>{{ status|capfirst }} Records</h1>

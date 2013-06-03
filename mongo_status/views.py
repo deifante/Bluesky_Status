@@ -21,7 +21,9 @@ def index(request):
     except StatusCount.DoesNotExist:
         status_counts = None
     historical_status = StatusCount.objects.filter(connection=MONGO_HOST).order_by('-generation_time')
-    return render(request, 'mongo_status/index.html', {'status_counts': status_counts, 'historical_status':historical_status})
+    return render(request, 'mongo_status/index.html',
+                  {'status_counts': status_counts,
+                   'historical_status':historical_status})
 
 def get_status(request):
     """
@@ -32,7 +34,7 @@ def get_status(request):
     historical_status = StatusCount.objects.filter(connection=MONGO_HOST).order_by('-generation_time')
     response_dict = {'query_value':request.GET['assetId'],
                      'is_partner_program':is_partner_program(int(request.GET['assetId'])),
-                     'status_counts': mongo_access.get_status_counts(),
+                     'status_counts': StatusCount.objects.filter(connection=MONGO_HOST).latest(),
                      'historical_status':historical_status}
     try:
         assetId = int(request.GET['assetId'])
@@ -42,11 +44,11 @@ def get_status(request):
         if asset and asset['partnerData']['getty']['status'] in ['processing', 'pending', 'complete', 'error']:
             response_dict['status_snippet'] = 'mongo_status/asset_snippets/%s.html' % asset['partnerData']['getty']['status'];
     except ValueError:
-        pass
+        asset = None
     except KeyError:
         # Probably caused by a 'non-standard' record and not checking every dictionary key on the asset.
         # Not a huge deal if we're just missing the status snippet.
-        pass
+        asset = None
 
     if asset:
         pretty_asset = pprint.pformat(asset)
@@ -58,8 +60,12 @@ def complete_details(request, status):
     """
     Get detailed information on a particular status.
     """
-    status_details = DetailedStatus.objects.filter(connection=MONGO_HOST, status=status).latest()
-    # I'm not super convinced that I want all of them, but for now there are only 3 days of data.
+    try:
+        status_details = DetailedStatus.objects.filter(connection=MONGO_HOST, status=status).latest()
+    except DetailedStatus.DoesNotExist:
+        status_details = None
+    # I'm not super convinced that I want all of them,
+    # but for now there's not that much data
     historical_data = DetailedStatus.objects.filter(connection=MONGO_HOST, status=status).order_by('-generation_time')
     response_dict = {'status': status, 'status_details': status_details, 'historical_data': historical_data}
     return render(request, 'mongo_status/status_details.html', response_dict)
