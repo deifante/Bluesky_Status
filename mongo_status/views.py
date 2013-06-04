@@ -2,7 +2,7 @@ import pprint
 
 from django.shortcuts import render
 
-from Bluesky_Status.settings import MONGO_HOST
+from django.conf import settings
 from mongo_access import MongoAccess
 from mysql_access import is_partner_program
 
@@ -17,10 +17,10 @@ def index(request):
     Now all this has to do is retrieve results via models.
     """
     try:
-        status_counts = StatusCount.objects.filter(connection=MONGO_HOST).latest()
+        status_counts = StatusCount.objects.filter(connection=settings.MONGO_HOST).latest()
     except StatusCount.DoesNotExist:
         status_counts = None
-    historical_status = StatusCount.objects.filter(connection=MONGO_HOST).order_by('-generation_time')
+    historical_status = StatusCount.objects.filter(connection=settings.MONGO_HOST).order_by('-generation_time')
     return render(request, 'mongo_status/index.html',
                   {'status_counts': status_counts,
                    'historical_status':historical_status})
@@ -31,13 +31,25 @@ def get_status(request):
     """
     asset = None
     mongo_access = MongoAccess()
-    historical_status = StatusCount.objects.filter(connection=MONGO_HOST).order_by('-generation_time')
-    response_dict = {'query_value':request.GET['assetId'],
-                     'is_partner_program':is_partner_program(int(request.GET['assetId'])),
-                     'status_counts': StatusCount.objects.filter(connection=MONGO_HOST).latest(),
+    historical_status = StatusCount.objects.filter(connection=settings.MONGO_HOST).order_by('-generation_time')
+
+    try:
+        # if we happen to be in this view without the assumed get param
+        assetId = int(request.GET['assetId'])
+    except KeyError:
+        assetId = 0
+
+    try:
+        # This can happen on an empty datastore
+        status_counts = StatusCount.objects.filter(connection=settings.MONGO_HOST).latest()
+    except StatusCount.DoesNotExist:
+        status_counts = None
+
+    response_dict = {'query_value':assetId,
+                     'is_partner_program':is_partner_program(assetId),
+                     'status_counts': status_counts,
                      'historical_status':historical_status}
     try:
-        assetId = int(request.GET['assetId'])
         asset = mongo_access.get_asset(assetId)
         response_dict['asset'] = asset
 
@@ -61,11 +73,11 @@ def complete_details(request, status):
     Get detailed information on a particular status.
     """
     try:
-        status_details = DetailedStatus.objects.filter(connection=MONGO_HOST, status=status).latest()
+        status_details = DetailedStatus.objects.filter(connection=settings.MONGO_HOST, status=status).latest()
     except DetailedStatus.DoesNotExist:
         status_details = None
     # I'm not super convinced that I want all of them,
     # but for now there's not that much data
-    historical_data = DetailedStatus.objects.filter(connection=MONGO_HOST, status=status).order_by('-generation_time')
+    historical_data = DetailedStatus.objects.filter(connection=settings.MONGO_HOST, status=status).order_by('-generation_time')
     response_dict = {'status': status, 'status_details': status_details, 'historical_data': historical_data}
     return render(request, 'mongo_status/status_details.html', response_dict)

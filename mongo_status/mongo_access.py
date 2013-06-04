@@ -3,15 +3,16 @@ import datetime
 from pymongo import Connection, ASCENDING, DESCENDING
 
 from django.core.cache import cache
+from django.conf import settings
 
 from mongo_status.models import StatusCount, DetailedStatus
-from Bluesky_Status.settings import MONGO_HOST
+
 class MongoAccess:
     """
     Simple class for getting the information I want out of mongo.
     """
 
-    def __init__(self, connection_ip = MONGO_HOST):
+    def __init__(self, connection_ip = settings.MONGO_HOST):
         """
         Connect to mongo and get a reference to the assets collection.
         """
