@@ -1,15 +1,15 @@
 from optparse import make_option
 
 from django.core.management.base import BaseCommand
+from django.conf import settings
 
-from Bluesky_Status.settings import MONGO_HOST
 from mongo_status.mongo_access import MongoAccess
 
 class Command(BaseCommand):
     help = 'Takes a StatusCount data sample for persistant storage'
     option_list = BaseCommand.option_list + (
         make_option('-o', '--host', action='store', dest='host',
-                    default=MONGO_HOST, help='The mongo host to query.'),
+                    default=settings.MONGO_HOST, help='The mongo host to query.'),
         )
 
     def handle(self, *args, **options):

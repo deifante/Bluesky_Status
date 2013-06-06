@@ -1,8 +1,8 @@
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
+from django.conf import settings
 
-from Bluesky_Status.settings import MONGO_HOST
 from mongo_status.mongo_access import MongoAccess
 
 class Command(BaseCommand):
@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
     make_option('-o', '--host', action='store', dest='host',
-                default=MONGO_HOST, help='The mongo host to query.'),
+                default=settings.MONGO_HOST, help='The mongo host to query.'),
     )
 
     def handle(self, *args, **options):
@@ -22,7 +22,6 @@ class Command(BaseCommand):
         status = args[0]
         if status not in self.valid_statuses:
             raise CommandError('Invalid status must be one of (pending, processing, complete, error) try -h for help')
-        
+
         mongo_access = MongoAccess(options['host'])
         mongo_access.get_status_details(status)
-

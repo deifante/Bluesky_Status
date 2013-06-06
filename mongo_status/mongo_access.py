@@ -12,13 +12,19 @@ class MongoAccess:
     Simple class for getting the information I want out of mongo.
     """
 
-    def __init__(self, connection_ip = settings.MONGO_HOST):
+    def __init__(self, connection_ip = None):
         """
         Connect to mongo and get a reference to the assets collection.
+
+        I wanted to default connection_ip to settings.MONGO_HOST but it
+        was causing problems during testing.
         """
         # Connection is 'deprecated' on the online pymongo docs, but the
         # replacement class MongoClient, doesn't seem to be available for me
         # so I guess we use the one that we can work with.
+        if connection_ip == None:
+            connection_ip = settings.MONGO_HOST
+
         self.connection = Connection(host=connection_ip)
         self.get_assets_collection()
 

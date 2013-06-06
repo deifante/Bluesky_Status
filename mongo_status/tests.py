@@ -7,7 +7,6 @@ from pymongo import Connection
 
 from mongo_status.models import StatusCount, DetailedStatus
 
-
 class MongoStatusIndexViewTests(TestCase):
     def test_index_view(self):
         """
@@ -53,14 +52,14 @@ class MongoStatusGetStatusViewTests(TestCase):
             'assetId': assetId,
             'partnerData':{'getty':{'status':'pending'}}
             }
-        
+
         mongo_connection = Connection()
         assets_collection = mongo_connection.bluesky.assets
         assets_collection.insert(asset_dict)
         StatusCount.objects.create(
             complete=123, error=234, pending=345, processing=456,
             undetermined=567, total = 678, connection=settings.MONGO_HOST)
-        
+
         response = self.client.get(reverse('mongo_status:get_status'), {'assetId':assetId})
 
         self.assertEqual(response.status_code, 200)
@@ -72,7 +71,6 @@ class MongoStatusGetStatusViewTests(TestCase):
         self.assertContains(response, 567)
         self.assertContains(response, 678)
         self.assertContains(response, 2048)
-        print response.content
         assets_collection.remove({'assetId':assetId});
 
 class MongoStatusCompleteDetailsViewTests(TestCase):
