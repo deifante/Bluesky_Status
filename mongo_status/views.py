@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.conf import settings
 from mongo_access import MongoAccess
 from mysql_access import is_partner_program
+from oracle_access import get_teams_reporting_data
 
 from mongo_status.models import StatusCount, DetailedStatus
 
@@ -45,10 +46,11 @@ def get_status(request):
     except StatusCount.DoesNotExist:
         status_counts = None
 
-    response_dict = {'query_value':assetId,
-                     'is_partner_program':is_partner_program(assetId),
-                     'status_counts': status_counts,
-                     'historical_status':historical_status}
+    response_dict = {'query_value'          :assetId,
+                     'is_partner_program'   :is_partner_program(assetId),
+                     'teams_reporting_data' :get_teams_reporting_data(assetId),
+                     'status_counts'        :status_counts,
+                     'historical_status'    :historical_status}
     try:
         asset = mongo_access.get_asset(assetId)
         response_dict['asset'] = asset

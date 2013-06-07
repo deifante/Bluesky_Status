@@ -74,10 +74,49 @@
       </div>
     </div>
 
-    <h1>Raw Mongo Asset</h1>
-    <pre>{{ pretty_asset }}</pre>
+    <div class="accordion" id="raw-accordion">
 
-  {% elif query_value %}
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-gottle="collapse" data-parent="raw-accordion" href="#rawCollapse">
+            <!-- <h1>Raw Mongo Asset</h1> -->
+            Raw Mongo Asset
+          </a>
+        </div><!-- accordion-heading -->
+        <div id="rawCollapse" class="accordion-body collapse in">
+          <div class="accordion-inner">
+            <pre>{{ pretty_asset }}</pre>
+          </div><!-- accordion-inner -->
+        </div><!-- rawCollapse -->
+      </div><!-- accordion-group -->
+
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-gottle="collapse" data-parent="raw-accordion" href="#teamsCollapse">
+            <!-- <h1>TEAMS reporting Data</h1> -->
+            TEAMS reporting Data
+          </a>
+        </div><!-- accordion-heading -->
+        <div id="teamsCollapse" class="accordion-body collapse in">
+          <div class="accordion-inner">
+            <table class="table">
+              <tr>
+                <th><h2>Column Name</h2></th>
+                <th><h2>Column Value</h2></th>
+              </tr>
+              {% for pair in teams_reporting_data %}
+                <tr>
+                  <td><strong>{{ pair.0 }}</strong></td>
+                  <td>{{ pair.1 }}</td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div><!-- accordion-inner -->
+        </div><!-- teamsCollapse -->
+      </div><!-- accordion-group -->
+    </div><!-- accordion -->
+
+  {% elif nquery_value %}
     <p>Couldn't find record for &quot;{{ query_value }}&quot;</p>
 
   {% endif %}
