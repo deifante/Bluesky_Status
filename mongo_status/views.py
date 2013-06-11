@@ -1,4 +1,5 @@
 import pprint
+import datetime
 
 from django.shortcuts import render
 
@@ -37,7 +38,9 @@ def get_status(request):
     try:
         # if we happen to be in this view without the assumed get param
         assetId = int(request.GET['assetId'])
-    except KeyError:
+    except KeyError: # no get param
+        assetId = 0
+    except ValueError: #not an int
         assetId = 0
 
     try:
@@ -55,8 +58,10 @@ def get_status(request):
         asset = mongo_access.get_asset(assetId)
         response_dict['asset'] = asset
 
-        if asset and asset['partnerData']['getty']['status'] in ['processing', 'pending', 'complete', 'error']:
-            response_dict['status_snippet'] = 'mongo_status/asset_snippets/%s.html' % asset['partnerData']['getty']['status'];
+        if asset and asset['partnerData']['getty']['status'] in \
+                ['processing', 'pending', 'complete', 'error']:
+            response_dict['status_snippet'] = 'mongo_status/asset_snippets/%s.html' % \
+                asset['partnerData']['getty']['status'];
     except ValueError:
         asset = None
     except KeyError:
@@ -68,6 +73,10 @@ def get_status(request):
         pretty_asset = pprint.pformat(asset)
         response_dict['pretty_asset'] = pretty_asset
 
+    if asset and 'lastChanged' in asset['partnerData']['getty'] \
+            and asset['partnerData']['getty']['lastChanged']:
+        response_dict['lastChanged'] = datetime.datetime.fromtimestamp(asset['partnerData']['getty']['lastChanged'])
+    
     return render(request, 'mongo_status/index.html', response_dict)
 
 def complete_details(request, status):

@@ -40,6 +40,14 @@ class MongoStatusGetStatusViewTests(TestCase):
         response = self.client.get(reverse('mongo_status:get_status'))
         self.assertEqual(response.status_code, 200)
 
+    def test_get_status_view_not_integer(self):
+        """
+        Make sure the view can handle some poor user input.
+        """
+        response = self.client.get(reverse('mongo_status:get_status'), {'assetId':'rr'})
+        self.assertEqual(response.status_code, 200)
+        
+
     @override_settings(MONGO_HOST='127.0.0.1')
     def test_get_status_view_status_counts(self):
         """

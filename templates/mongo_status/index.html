@@ -70,6 +70,9 @@
             {% elif asset.priority < 54 %}
               <span class="text-delete">delete</span> request.</p>
             {% endif %}
+
+            {% comment %} A note detailing when the last metadata change happened on this file. {% endcomment %}
+            <p>The last time this file changed was {{ lastChanged|date:"DATETIME_FORMAT" }}</p>
           </div>
       </div>
     </div>
@@ -78,12 +81,11 @@
 
       <div class="accordion-group">
         <div class="accordion-heading">
-          <a class="accordion-toggle" data-gottle="collapse" data-parent="raw-accordion" href="#rawCollapse">
-            <!-- <h1>Raw Mongo Asset</h1> -->
-            Raw Mongo Asset
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="raw-accordion" href="#rawCollapse">
+            <h4>Raw Mongo Asset</h4>
           </a>
         </div><!-- accordion-heading -->
-        <div id="rawCollapse" class="accordion-body collapse in">
+        <div id="rawCollapse" class="accordion-body collapse">
           <div class="accordion-inner">
             <pre>{{ pretty_asset }}</pre>
           </div><!-- accordion-inner -->
@@ -92,12 +94,11 @@
 
       <div class="accordion-group">
         <div class="accordion-heading">
-          <a class="accordion-toggle" data-gottle="collapse" data-parent="raw-accordion" href="#teamsCollapse">
-            <!-- <h1>TEAMS reporting Data</h1> -->
-            TEAMS reporting Data
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="raw-accordion" href="#teamsCollapse">
+            <h4>TEAMS reporting Data</h4>
           </a>
         </div><!-- accordion-heading -->
-        <div id="teamsCollapse" class="accordion-body collapse in">
+        <div id="teamsCollapse" class="accordion-body collapse">
           <div class="accordion-inner">
             <table class="table">
               <tr>

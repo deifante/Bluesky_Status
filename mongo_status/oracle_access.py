@@ -16,6 +16,10 @@ def get_teams_reporting_data(assetId):
       where raa.ALIAS_TYPE='iStockphoto' and raa.PORTAL_ALIAS = 'Y' and raa.ALIAS = :asset_id""",
                    {'asset_id': str(assetId)})
 
-    values = list(cursor.fetchone())
+    values = cursor.fetchone()
+    if values == None:
+        return None
+
+    values = list(values)
     columns = [x[0] for x in cursor.description]
     return zip(columns, values)
