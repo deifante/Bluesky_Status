@@ -8,7 +8,7 @@ from mongo_access import MongoAccess
 from mysql_access import is_partner_program
 from oracle_access import get_teams_reporting_data
 
-from mongo_status.models import StatusCount, DetailedStatus
+from mongo_status.models import StatusCount, DetailedStatus, BasicStatus
 
 def index(request):
     """
@@ -23,8 +23,12 @@ def index(request):
     except StatusCount.DoesNotExist:
         status_counts = None
     historical_status = StatusCount.objects.filter(connection=settings.MONGO_HOST).order_by('-generation_time')
+    basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).latest()
+    historical_basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).order_by('-generation_time')
     return render(request, 'mongo_status/index.html',
-                  {'status_counts': status_counts,
+                  {'status_counts':status_counts,
+                   'historical_basic_status': historical_basic_status,
+                   'basic_status':basic_status,
                    'historical_status':historical_status})
 
 def get_status(request):
@@ -34,6 +38,8 @@ def get_status(request):
     asset = None
     mongo_access = MongoAccess()
     historical_status = StatusCount.objects.filter(connection=settings.MONGO_HOST).order_by('-generation_time')
+    basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).latest()
+    historical_basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).order_by('-generation_time')
 
     try:
         # if we happen to be in this view without the assumed get param
@@ -53,6 +59,8 @@ def get_status(request):
                      'is_partner_program'   :is_partner_program(assetId),
                      'teams_reporting_data' :get_teams_reporting_data(assetId),
                      'status_counts'        :status_counts,
+                     'historical_basic_status': historical_basic_status,
+                     'basic_status':basic_status,
                      'historical_status'    :historical_status}
     try:
         asset = mongo_access.get_asset(assetId)
@@ -76,7 +84,7 @@ def get_status(request):
     if asset and 'lastChanged' in asset['partnerData']['getty'] \
             and asset['partnerData']['getty']['lastChanged']:
         response_dict['lastChanged'] = datetime.datetime.fromtimestamp(asset['partnerData']['getty']['lastChanged'])
-    
+
     return render(request, 'mongo_status/index.html', response_dict)
 
 def complete_details(request, status):

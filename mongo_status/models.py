@@ -58,3 +58,26 @@ class DetailedStatus(models.Model):
     class Meta:
         ordering = ['connection', 'status', 'generation_time']
         get_latest_by = 'generation_time'
+
+class BasicStatus(models.Model):
+    """
+    Stores a simple view of the Bluesky queue
+
+    We want to cut all the detail from the status so we can get a good feel for
+    the health of the queue. We're purposely leaving out error because that
+    doesn't *directly* add to any back log.
+    """
+    generation_time = models.DateTimeField(auto_now_add=True, help_text='The time this information was generated.')
+    connection = models.IPAddressField(default = '127.0.0.1', help_text='The server this data was gathered from.')
+    update = models.BigIntegerField(default=0, help_text='The count of how many records in the Bluesky queue are for modifications.')
+    new = models.BigIntegerField(default=0, help_text='The count of how many records in the Bluesky queue are for new files.')
+    delete = models.BigIntegerField(default=0, help_text='The count of how many records in the Bluesky queue are for file deletions.')
+
+    def __unicode__(self):
+        return 'Basic status generated @ %s. updates:%s news:%s deletes:%s' % (self.generation_time.strftime('%Y-%m-%d %H-%M-S'), self.update, self.new, self.delete)
+
+    class Meta:
+        ordering = ['connection', 'generation_time']
+        get_latest_by = 'generation_time'
+
+

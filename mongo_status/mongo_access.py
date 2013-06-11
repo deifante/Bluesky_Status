@@ -5,7 +5,7 @@ from pymongo import Connection, ASCENDING, DESCENDING
 from django.core.cache import cache
 from django.conf import settings
 
-from mongo_status.models import StatusCount, DetailedStatus
+from mongo_status.models import StatusCount, DetailedStatus, BasicStatus
 
 class MongoAccess:
     """
@@ -132,3 +132,30 @@ class MongoAccess:
             )
         detailed_status.save()
         return status_details
+
+    def get_basic_counts(self):
+        """
+        Get a simple view of the Bluesky queue.
+
+        This data will provide a quick way to see what is actually queued and
+        ready to go out from Bluesky. This is different from adding all the
+        records that have a particular status because of special cases here and
+        there.
+
+        Getting all this information takes on the order of 100 seconds. It is
+        not recommened for a web request. The results will be logged an the
+        data used later.
+        """
+        basic_counts = \
+            {
+            'update' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.legacyMigration': {'$exists':False}, 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':0,  '$lte':14}}, slave_okay=True, await_data=True).count(),
+            'new'    : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.legacyMigration': {'$exists':False}, 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':10, '$lte':14}}, slave_okay=True, await_data=True).count(),
+            'delete' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.legacyMigration': {'$exists':False}, 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':50, '$lte':54}}, slave_okay=True, await_data=True).count()
+            }
+
+        basic_count = BasicStatus.objects.create(
+            update = basic_counts['update'], new = basic_counts['new'],
+            delete = basic_counts['delete'],connection = self.connection.host
+            )
+        return basic_count
+            

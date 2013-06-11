@@ -1,0 +1,113 @@
+{% load humanize %}
+<div class="row">
+  <div class="span12">
+    <h1>Queue Status</h1>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span7">
+    <table class="table">
+      <thead>
+        <tr>
+          <th><h2>Status</h2></th>
+          <th><h2># of records</h2></th>
+        </tr>
+      </thead>
+      <tfoot>
+        <tr>
+          <td><strong>Total</strong></td>
+          <td><strong>{{ basic_status.update|add:basic_status.new|add:basic_status.delete|intcomma }}</strong></td>
+        </tr>
+      </tfoot>
+      <tbody>
+        <tr>
+          <td>Update</td>
+          <td class="text-update">{{basic_status.update|intcomma}}</td>
+        </tr>
+        <tr>
+          <td>New</td>
+          <td class="text-new">{{basic_status.new|intcomma}}</td>
+        </tr>
+        <tr>
+          <td>Delete</td>
+          <td class="text-delete">{{basic_status.delete|intcomma}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div><!-- class="span7" -->
+
+  <div class="span5">
+    <div id="basicStatusGraph"></div>
+  </div><!-- class="span5" -->
+</div><!-- class="row" -->
+
+<div class="row">
+  <div class="span12">
+    <p class="text-right"><small>Generated at {{ basic_status.generation_time }}</small></p>
+  </div><!-- class="span12" -->
+</div><!-- class="row" -->
+
+<div class="row">
+  <div class="span12">
+    <div id="historicalBasicStatusGraph"></div>
+  </div><!-- class="span12" -->
+</div><!-- class="row" -->
+
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  // Load the Visualization API and the piechart package.
+  google.load('visualization', '1.0', {'packages':['corechart']});
+
+  // Set a callback to run when the Google Visualization API is loaded.
+  google.setOnLoadCallback(drawBasicQueueStatusChart);
+  google.setOnLoadCallback(drawBasicQueueHistoryChart);
+
+  // Callback that creates and populates a data table,
+  // instantiates the pie chart, passes in the data and
+  // draws it.
+  function drawBasicQueueStatusChart()
+  {
+    // Create the data table.
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn('string',  'Status');
+    dataTable.addColumn('number', '# of records');
+    dataTable.addRows([
+      ['Update', {{ basic_status.update }}],
+      ['New', {{ basic_status.new }}],
+      ['Delete', {{ basic_status.delete }}]
+    ]);
+
+    // Set chart options
+    var options = {'title': 'Bluesky Queue Status',
+                   'width': 380,
+                   'height': 300,
+                   'colors': ['#1ABC9C', '#2ECC71', '#E74C3C']};
+    var chart = new google.visualization.PieChart(document.getElementById('basicStatusGraph'));
+    chart.draw(dataTable, options);
+  }
+
+  function drawBasicQueueHistoryChart()
+  {
+    // Create the data table.
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn('datetime', 'Date');
+    dataTable.addColumn('number', 'Update');
+    dataTable.addColumn('number', 'New');
+    dataTable.addColumn('number', 'Delete');
+
+    dataTable.addRows([
+      {% for data_point in historical_basic_status %}
+        [new Date('{{ data_point.generation_time|date:"r"}}'), {{ data_point.update }}, {{ data_point.new }} , {{ data_point.delete }}],
+      {% endfor %}
+    ]);
+
+    // Set chart options
+    var options = {'title': 'Historical Bluesky Queue Status',
+                   'chartArea': {width:700},
+                   'colors': ['#1ABC9C', '#2ECC71', '#E74C3C']};
+    var chart = new google.visualization.LineChart(document.getElementById('historicalBasicStatusGraph'));
+    chart.draw(dataTable, options);
+  }
+</script>

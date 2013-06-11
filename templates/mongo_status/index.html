@@ -11,7 +11,10 @@
     </div>
   </div>
 
-  {% comment %} Some #'s regarding the system status {% endcomment %}
+  {% comment %} Some #'s regarding the basic bluesky queue status {% endcomment %}
+  {% include 'mongo_status/snippets/queue_snippet.html' %}
+
+  {% comment %} Some #'s regarding the detailed system status {% endcomment %}
   {% include 'mongo_status/snippets/status_snippet.html' %}
 
   {% if asset %}
