@@ -148,9 +148,9 @@ class MongoAccess:
         """
         basic_counts = \
             {
-            'update' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.legacyMigration': {'$exists':False}, 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':0,  '$lte':14}}, slave_okay=True, await_data=True).count(),
-            'new'    : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.legacyMigration': {'$exists':False}, 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':10, '$lte':14}}, slave_okay=True, await_data=True).count(),
-            'delete' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.legacyMigration': {'$exists':False}, 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':50, '$lte':54}}, slave_okay=True, await_data=True).count()
+            'update' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':0,  '$lte':14}}, slave_okay=True, await_data=True).count(),
+            'new'    : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':10, '$lte':14}}, slave_okay=True, await_data=True).count(),
+            'delete' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':50, '$lte':54}}, slave_okay=True, await_data=True).count()
             }
 
         basic_count = BasicStatus.objects.create(

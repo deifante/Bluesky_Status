@@ -7,6 +7,7 @@ from django.conf import settings
 from mongo_access import MongoAccess
 from mysql_access import is_partner_program
 from oracle_access import get_teams_reporting_data
+from splunk_access import SplunkAccess
 
 from mongo_status.models import StatusCount, DetailedStatus, BasicStatus
 
@@ -46,22 +47,27 @@ def get_status(request):
         assetId = int(request.GET['assetId'])
     except KeyError: # no get param
         assetId = 0
-    except ValueError: #not an int
+    except ValueError: # not an int
         assetId = 0
 
+    splunk_access = SplunkAccess()
+    all_splunk_actions = splunk_access.get_all_actions(assetId)
+    
     try:
         # This can happen on an empty datastore
         status_counts = StatusCount.objects.filter(connection=settings.MONGO_HOST).latest()
     except StatusCount.DoesNotExist:
         status_counts = None
 
-    response_dict = {'query_value'          :assetId,
-                     'is_partner_program'   :is_partner_program(assetId),
-                     'teams_reporting_data' :get_teams_reporting_data(assetId),
-                     'status_counts'        :status_counts,
+    response_dict = {'query_value'            : assetId,
+                     'is_partner_program'     : is_partner_program(assetId),
+                     'teams_reporting_data'   : get_teams_reporting_data(assetId),
+                     'status_counts'          : status_counts,
                      'historical_basic_status': historical_basic_status,
-                     'basic_status':basic_status,
-                     'historical_status'    :historical_status}
+                     'basic_status'           : basic_status,
+                     'most_recent_action'     : all_splunk_actions[0],
+                     'all_splunk_actions'     : all_splunk_actions,
+                     'historical_status'      : historical_status}
     try:
         asset = mongo_access.get_asset(assetId)
         response_dict['asset'] = asset
@@ -80,10 +86,6 @@ def get_status(request):
     if asset:
         pretty_asset = pprint.pformat(asset)
         response_dict['pretty_asset'] = pretty_asset
-
-    if asset and 'lastChanged' in asset['partnerData']['getty'] \
-            and asset['partnerData']['getty']['lastChanged']:
-        response_dict['lastChanged'] = datetime.datetime.fromtimestamp(asset['partnerData']['getty']['lastChanged'])
 
     return render(request, 'mongo_status/index.html', response_dict)
 

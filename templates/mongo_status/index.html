@@ -74,13 +74,40 @@
               <span class="text-delete">delete</span> request.</p>
             {% endif %}
 
-            {% comment %} A note detailing when the last metadata change happened on this file. {% endcomment %}
-            <p>The last time this file changed was {{ lastChanged|date:"DATETIME_FORMAT" }}</p>
-          </div>
-      </div>
-    </div>
+            {% comment %} Using logging from Splunk to get logging information {% endcomment %}
+             <p>The last action on this file was {% include most_recent_action.history_snippet %} with the <strong>{{most_recent_action.partner|title}}</strong> @ <strong>{{most_recent_action.log_time|date:"DATETIME_FORMAT"}}</strong>.</p>
+
+          </div><!-- well -->
+      </div><!-- span12 -->
+    </div><!-- row -->
 
     <div class="accordion" id="raw-accordion">
+
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="raw-accordion" href="#historyCollapse">
+            <h4>Asset History</h4>
+          </a>
+        </div><!-- accordion-heading -->
+        <div id="historyCollapse" class="accordion-body collapse">
+          <div class="accordion-inner">
+
+            <table class="table">
+              <tr>
+                <th><h2>Action</h2></th>
+                <th><h2>Date</h2></th>
+              </tr>
+              {% for splunk_action in all_splunk_actions %}
+                <tr>
+                  <td>{% include splunk_action.history_snippet %}</td>
+                  <td>{{ splunk_action.log_time|date:"DATETIME_FORMAT"}}</td>
+                </tr>
+              {% endfor %}
+            </table>
+
+          </div><!-- accordion-inner -->
+        </div><!-- historyCollapse -->
+      </div><!-- accordion-group -->
 
       <div class="accordion-group">
         <div class="accordion-heading">
@@ -120,7 +147,7 @@
       </div><!-- accordion-group -->
     </div><!-- accordion -->
 
-  {% elif nquery_value %}
+  {% elif query_value %}
     <p>Couldn't find record for &quot;{{ query_value }}&quot;</p>
 
   {% endif %}
