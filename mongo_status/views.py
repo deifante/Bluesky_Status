@@ -52,7 +52,7 @@ def get_status(request):
 
     splunk_access = SplunkAccess()
     all_splunk_actions = splunk_access.get_all_actions(assetId)
-    
+
     try:
         # This can happen on an empty datastore
         status_counts = StatusCount.objects.filter(connection=settings.MONGO_HOST).latest()
@@ -65,7 +65,7 @@ def get_status(request):
                      'status_counts'          : status_counts,
                      'historical_basic_status': historical_basic_status,
                      'basic_status'           : basic_status,
-                     'most_recent_action'     : all_splunk_actions[0],
+                     'most_recent_action'     : all_splunk_actions[0] if all_splunk_actions else None,
                      'all_splunk_actions'     : all_splunk_actions,
                      'historical_status'      : historical_status}
     try:

@@ -75,7 +75,10 @@
             {% endif %}
 
             {% comment %} Using logging from Splunk to get logging information {% endcomment %}
-             <p>The last action on this file was {% include most_recent_action.history_snippet %} with the <strong>{{most_recent_action.partner|title}}</strong> @ <strong>{{most_recent_action.log_time|date:"DATETIME_FORMAT"}}</strong>.</p>
+            {% comment %} I don't expect this to occur in a 'real life' situation but it doesn't hurt to be safe and this situation *does* occur during certian test situations {% endcomment %}
+            {% if most_recent_action and most_recent_action.history_snippet %}
+              <p>The last action on this file was {% include most_recent_action.history_snippet %} with <strong>{{most_recent_action.partner|title}}</strong> @ <strong>{{most_recent_action.log_time|date:"DATETIME_FORMAT"}}</strong>.</p>
+            {% endif %}
 
           </div><!-- well -->
       </div><!-- span12 -->

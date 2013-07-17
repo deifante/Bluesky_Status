@@ -5,9 +5,12 @@ from django.conf import settings
 
 from pymongo import Connection
 
-from mongo_status.models import StatusCount, DetailedStatus
+from mongo_status.models import StatusCount, DetailedStatus, BasicStatus
 
 class MongoStatusIndexViewTests(TestCase):
+    def setUp(self):
+        BasicStatus.objects.create(connection=settings.MONGO_HOST, update=123, new=234, delete=345)
+
     def test_index_view(self):
         """
         Make sure the index page doesn't die. Even with no data.
@@ -32,7 +35,15 @@ class MongoStatusIndexViewTests(TestCase):
         self.assertContains(response, 567)
         self.assertContains(response, 678)
 
+@override_settings(MONGO_HOST='127.0.0.1')
+@override_settings(SPLUNK_HOST='localhost')
+@override_settings(SPLUNK_PORT=8089)
+@override_settings(SPLUNK_USERNAME='admin')
+@override_settings(SPLUNK_PASSWORD='changeme')
 class MongoStatusGetStatusViewTests(TestCase):
+    def setUp(self):
+        BasicStatus.objects.create(connection=settings.MONGO_HOST, update=123, new=234, delete=345)
+
     def test_get_status_view_no_data(self):
         """
         Make sure the get_status view works without any provided data.
@@ -46,9 +57,7 @@ class MongoStatusGetStatusViewTests(TestCase):
         """
         response = self.client.get(reverse('mongo_status:get_status'), {'assetId':'rr'})
         self.assertEqual(response.status_code, 200)
-        
 
-    @override_settings(MONGO_HOST='127.0.0.1')
     def test_get_status_view_status_counts(self):
         """
         This is kinda crappy right now. It's "good" that it's not using the
@@ -82,11 +91,17 @@ class MongoStatusGetStatusViewTests(TestCase):
         assets_collection.remove({'assetId':assetId})
 
 @override_settings(MONGO_HOST='127.0.0.1')
+@override_settings(SPLUNK_HOST='localhost')
+@override_settings(SPLUNK_PORT=8089)
+@override_settings(SPLUNK_USERNAME='admin')
+@override_settings(SPLUNK_PASSWORD='changeme')
 class MongoStatusGetStatusViewAttributesOfNoteTests(TestCase):
     """
     Ensure the 'Attributes of Note' section in the index.html template works as
     expected.
     """
+    def setUp(self):
+        BasicStatus.objects.create(connection=settings.MONGO_HOST, update=123, new=234, delete=345)
 
     def add_asset_to_mongo(self, asset):
         """
@@ -221,7 +236,7 @@ class MongoStatusGetStatusViewAttributesOfNoteTests(TestCase):
         assetId = 92869
         asset_dict = {'assetId':assetId}
 
-        # Update priority
+        # update priority
         self.set_priority_on_asset(asset_dict,  2)
         assets_collection = self.add_asset_to_mongo(asset_dict)
 
