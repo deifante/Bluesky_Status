@@ -102,7 +102,13 @@
               </tr>
               {% for splunk_action in all_splunk_actions %}
                 <tr>
-                  <td>{% include splunk_action.history_snippet %}</td>
+                  <td>
+                    {% if splunk_action.history_snippet %}
+                      {% include splunk_action.history_snippet %}
+                    {% else %}
+                      {{ splunk_action.action }}
+                    {% endif %}
+                  </td>
                   <td>{{ splunk_action.log_time|date:"DATETIME_FORMAT"}}</td>
                 </tr>
               {% endfor %}

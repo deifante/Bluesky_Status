@@ -304,3 +304,105 @@ class MongoStatusCompleteDetailsViewTests(TestCase):
         self.assertContains(response, 678)
         self.assertContains(response, 8910)
         self.assertContains(response, 91011)
+
+@override_settings(SPLUNK_HOST='localhost')
+@override_settings(SPLUNK_PORT=8089)
+@override_settings(SPLUNK_USERNAME='admin')
+@override_settings(SPLUNK_PASSWORD='changeme')
+class MongoStatusAssetHistoryTests(TestCase):
+    """
+    Ensure the Asset History block is displaying as desired.
+
+    These tests are not ideal because they currently depend on the data
+    stored in my local host splunk.
+    """
+    def setUp(self):
+        BasicStatus.objects.create(connection=settings.MONGO_HOST, update=123, new=234, delete=345)
+
+    def test_sent_uri_splunk_action(self):
+        """
+        file id 11604984 has a had 'sent uri' action in my local host splunk
+        """
+        assetId = 11604984
+
+        response = self.client.get(reverse('mongo_status:get_status'), {'assetId':assetId})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Sent Uri')
+
+    def test_sent_asset_splunk_action(self):
+        """
+        file id 11604984 has a had 'sent asset' action in my local host splunk
+        """
+        assetId = 11604984
+
+        response = self.client.get(reverse('mongo_status:get_status'), {'assetId':assetId})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Sent Asset')
+
+    def test_received_error_splunk_action(self):
+        """
+        file id 11604984 has a had 'received error' action in my local host splunk
+        """
+        assetId = 11604984
+
+        response = self.client.get(reverse('mongo_status:get_status'), {'assetId':assetId})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Received Error')
+
+    def test_received_success_splunk_action(self):
+        """
+        file id 11604984 has a had 'received success' action in my local host splunk
+        """
+        assetId = 11604984
+
+        response = self.client.get(reverse('mongo_status:get_status'), {'assetId':assetId})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Received Success')
+
+    def test_sent_metadata_splunk_action(self):
+        """
+        file id 1963326 has a had 'received success' action in my local host splunk
+        """
+        assetId = 1963326
+
+        response = self.client.get(reverse('mongo_status:get_status'), {'assetId':assetId})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Sent Metadata')
+
+    def test_sent_metadata_by_id_splunk_action(self):
+        """
+        file id 11604984 has a had 'sent metadata by id' action in my local host splunk
+        """
+        assetId = 11604984
+
+        response = self.client.get(reverse('mongo_status:get_status'), {'assetId':assetId})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Sent Metadata by Id')
+
+    def test_queued_splunk_action(self):
+        """
+        file id 1005178 has a had a 'queued' action in my local host splunk
+        """
+        assetId = 1005178
+
+        response = self.client.get(reverse('mongo_status:get_status'), {'assetId':assetId})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Queued')
+
+    def test_invalid_splunk_action_display(self):
+        """
+        Log data can be messy even if it's from machines. Sometimes
+        the code changes and there's little way to "unlog" splunk data.
+        This will make sure things don't nuke when the code doesn't
+        recognise a particular action logged in splunk.
+
+        11604984 happens to have some older format logging messages attached to
+        it. If the page renders without exception then the unexpected logging
+        messages are being handled one way or another.
+        """
+        assetId = 11604984
+
+        response = self.client.get(reverse('mongo_status:get_status'), {'assetId':assetId})
+        self.assertEqual(response.status_code, 200)
+        # an old logging message for getAssetDataById
+        self.assertContains(response, 'Sent Specific Metadata')

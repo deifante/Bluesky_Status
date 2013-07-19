@@ -28,6 +28,13 @@ DATABASES = {
 # MONGO_HOST = '10.2.241.213'              # dev
 MONGO_HOST = '10.2.106.180'                # 'cf-mongo3.istockphoto.com' # live
 
+# Splunk host will determine the splunk server that we expect has the logs
+# relating to the the files we are interested in.
+SPLUNK_HOST     = 'localhost'
+SPLUNK_PORT     = 8089
+SPLUNK_USERNAME = 'admin'
+SPLUNK_PASSWORD = 'changeme'
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []

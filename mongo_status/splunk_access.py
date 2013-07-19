@@ -12,7 +12,8 @@ class SplunkAccess:
     """
     Small class for retrieving logged information.
 
-    The information stored in splunk is process flow logging. When a file is added to the bluesky queue or when data is sent and so on.
+    The information stored in splunk is process flow logging. When a file is
+    added to the bluesky queue or when data is sent and so on.
 
    | Thing that happend       | logging message                   |
    |--------------------------+-----------------------------------|
@@ -28,6 +29,15 @@ class SplunkAccess:
 
        Change to Bluesky File. Action: Sent Asset. Asset ID: 11604984 Partner: getty
     """
+
+    # This is more maintenance than I desire. A more automatic solution would be
+    # to find the snippet directory via the settings directory then load the
+    # valid snippets that way. This way is less processing power per request
+    # so it's got that in it's favour.
+    VALID_HISTORY_SNIPPETS = ['queued', 'received_error', 'received_success',
+                              'sent_asset', 'sent_metadata_by_id', 'sent_metadata',
+                              'sent_uri']
+
     def __init__(self, host=None, port=None, username=None, password=None):
         """
         Connect to a splunk instance
@@ -49,7 +59,15 @@ class SplunkAccess:
         self.extraction_pattern = re.compile(extraction_string)
 
     def make_history_snippet_slug(self, source_string):
-        return "mongo_status/history_snippets/%s.html" % source_string.strip().lower().replace('.','').replace(' ', '_')
+        """
+        I originally wanted to have the template just load what ever action was
+        there, but unfortunately log data isn't always perfect so some filtering
+        is required.
+        """
+        history_template = source_string.strip().lower().replace('.','').replace(' ', '_')
+        if history_template in SplunkAccess.VALID_HISTORY_SNIPPETS:
+            return "mongo_status/history_snippets/%s.html" % history_template
+        return None
 
     def get_most_recent_action(self, assetId):
         """
