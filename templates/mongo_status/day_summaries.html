@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Available Day Summaries{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="{% url 'mongo_status:index' %}">System Status</a> <span class="divider">/</span></li>
+  <li class="active">Available Day Summaries</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="span12">
+    <h1>Available Day Summaries</h1>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12">
+    <ul>
+      {% for day_summary in day_summaries %}
+        <li><a href="{% url 'mongo_status:day_summary' day_summary.day.year day_summary.day.month day_summary.day.day %}">{{ day_summary.day|date:"l F jS, Y" }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock content %}

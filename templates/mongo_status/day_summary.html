@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}{{ day_logged|date:"l F jS, Y" }} in Bluesky {% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="{% url 'mongo_status:index' %}">System Status</a> <span class="divider">/</span></li>
+  <li><a href="{% url 'mongo_status:day_summaries' %}">Available Day Summaries</a><span class="divider">/</span></li>
+  <li class="active">{{ day_logged|date:"l F jS, Y" }} in Bluesky </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="span12">
+         <h1>{{ day_logged|date:"l F jS, Y" }} in Bluesky</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span6 text-left">
+      {% if prev_day %}
+        <p><a href="{% url 'mongo_status:day_summary' prev_day.day.year prev_day.day.month prev_day.day.day %}"><span class="fui-arrow-left"></span>Previous Day ({{ prev_day.day|date:"F jS" }})</a></p>
+      {% else %}
+        <p>No previous day available.</p>
+      {% endif %}
+    </div>
+
+    <div class="span6 text-right">
+      {% if next_day %}
+        <p><a href="{% url 'mongo_status:day_summary' next_day.day.year next_day.day.month next_day.day.day %}">Next Day ({{ next_day.day|date:"F jS" }})<span class="fui-arrow-right"></span></a></p>
+      {% else %}
+        <p>No next day available.</p>
+      {% endif %}
+    </div>
+  </div>
+  
+  
+  {% if day_summary %}
+     <div class="row">
+       <div class="span12">
+         <div id="daySummaryGraphNoQueued"></div>
+       </div>
+     </div>
+
+     <div class="row">
+       <div class="span12">
+         <div id="daySummaryGraph"></div>
+       </div>
+     </div>
+     
+     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+     <script type="text/javascript">
+       google.load('visualization', '1.0', {'packages':['corechart']});
+       google.setOnLoadCallback(drawDaySummaryChart);
+       google.setOnLoadCallback(drawDaySummaryChartNoQueued);
+  
+       function drawDaySummaryChart()
+       {
+         var data = google.visualization.arrayToDataTable([
+            [
+             'Date',
+             'Total Queued', 'Unique Queued',
+             'Total Sent Metadata', 'Unique Sent Metadata',
+             'Total Errored', 'Unique Errored',
+             'Total Success', 'Unique Success',
+             'Total Sent Asset', 'Unique Sent Asset'
+            ],
+            ['{{ day_logged|date:"F jS, Y"}}',
+              {{ day_summary.total_queued }}, {{ day_summary.unique_queued }},
+              {{ day_summary.total_sent_metadata }}, {{ day_summary.unique_sent_metadata }},
+              {{ day_summary.total_errored }}, {{ day_summary.unique_errored }},
+              {{ day_summary.total_success }}, {{ day_summary.unique_success }},
+              {{ day_summary.total_sent_asset }}, {{ day_summary.unique_sent_asset }},
+            ]
+          ]);
+  
+         var options = {
+           title:'{{ day_logged|date:"l F jS, Y" }} in Bluesky',
+           vAxis:{title: '# of File Ids'},
+           hAxis:{title: 'Date'},
+           height:600,
+           colors:['#3498DB', '#2980B9', // Queued
+                   '#9B59B6', '#8E44AD', // Sent Metadata
+                   '#E74C3C', '#C0392B', // Errored
+                   '#2ECC71', '#27AE60', // Success
+                   '#F1C40F', '#F39C12'] // Sent Asset
+         }
+         var chart = new google.visualization.ColumnChart(document.getElementById('daySummaryGraph'));
+         chart.draw(data, options);
+       }
+
+       function drawDaySummaryChartNoQueued()
+       {
+         var data = google.visualization.arrayToDataTable([
+            [
+             'Date',
+             'Total Sent Metadata', 'Unique Sent Metadata',
+             'Total Errored', 'Unique Errored',
+             'Total Success', 'Unique Success',
+             'Total Sent Asset', 'Unique Sent Asset'
+            ],
+            ['{{ day_logged|date:"F jS, Y"}}',
+              {{ day_summary.total_sent_metadata }}, {{ day_summary.unique_sent_metadata }},
+              {{ day_summary.total_errored }}, {{ day_summary.unique_errored }},
+              {{ day_summary.total_success }}, {{ day_summary.unique_success }},
+              {{ day_summary.total_sent_asset }}, {{ day_summary.unique_sent_asset }},
+            ]
+          ]);
+  
+         var options = {
+           title:'{{ day_logged|date:"l F jS, Y" }} in Bluesky (without Queuing #\'s)',
+           vAxis:{title: '# of File Ids'},
+           hAxis:{title: 'Date'},
+           height:600,
+           colors:['#9B59B6', '#8E44AD', // Sent Metadata
+                   '#E74C3C', '#C0392B', // Errored
+                   '#2ECC71', '#27AE60', // Success
+                   '#F1C40F', '#F39C12'] // Sent Asset
+         }
+         var chart = new google.visualization.ColumnChart(document.getElementById('daySummaryGraphNoQueued'));
+         chart.draw(data, options);
+       }       
+     </script>
+  {% else %}
+     <p>no day summary found for this day! :'(</p>
+  {% endif %}
+{% endblock content %}

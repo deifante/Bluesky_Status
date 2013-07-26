@@ -81,3 +81,47 @@ class BasicStatus(models.Model):
         get_latest_by = 'generation_time'
 
 
+class DaySummary(models.Model):
+    """
+    Computing a summary of the things that happened in a day takes from 4 to 7 minutes right now. Too long to process @ request time.
+
+    I don't think the calling api makes use of all the function calls that we provide, so I think I'll leave space for them in the db but not make a large attempt to actually compute their usage.
+
+    This class will be used to store the results of a high level scan of the logging that happened in a particular day.
+    This is a small outline of the logging that is currently in the system.n
+
+   | Thing that happend       | logging message                   |
+   |--------------------------+-----------------------------------|
+   | file set to pending      | Queued.                           |
+   | setAssetStatus (error)   | Received Error.                   |
+   | setAssetStatus (success) | Received Success.                 |
+   | getAssetData             | 'Sent Metadata.' for each file ID |
+   | getAssetDataById         | Sent Metadata by Id.              | (not used)
+   | generateNewAssetUri      | Sent Uri.                         | (not used)
+   | File retrieved           | Sent Asset.                       |
+    """
+    day = models.DateField(help_text='The day that is summarised', blank=False)
+    connection = models.CharField(max_length=64, help_text='The IP or host name for the splunk server where these results were retrieved from')
+
+    total_queued = models.BigIntegerField(default=0, help_text='The total number of queueing events')
+    unique_queued = models.BigIntegerField(default=0, help_text='The number of unique file ids queued in this time')
+
+    total_errored = models.BigIntegerField(default=0, help_text='The total number of error events')
+    unique_errored = models.BigIntegerField(default=0, help_text='The number of unique file ids that reported errors on this day')
+
+    total_success = models.BigIntegerField(default=0, help_text='The total number of success events')
+    unique_success = models.BigIntegerField(default=0, help_text='The number of unique file ids that reported success on this day')
+
+    total_sent_metadata = models.BigIntegerField(default=0, help_text='The total number of meta data packets sent')
+    unique_sent_metadata = models.BigIntegerField(default=0, help_text='The number of meta data packets sent for unique fild ids on this day')
+
+    total_sent_asset = models.BigIntegerField(default=0, help_text='The total number of meta data packets sent')
+    unique_sent_asset = models.BigIntegerField(default=0, help_text='The number of meta data packets sent for unique fild ids on this day')
+
+    def __unicode__(self):
+        return '%s for %s on %s' % (type(self), self.day.isoformat(), self.connection)
+
+    class Meta:
+        ordering = ['connection', '-day']
+        unique_together = ('day', 'connection')
+        get_latest_by = 'day'

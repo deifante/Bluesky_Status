@@ -56,3 +56,19 @@
    color:#ffffff;
    margin:10px;
 }
+#daySummaryImageLink
+{
+  max-height:50px;
+  max-width:50px;
+}
+
+#yesterdaysDaySummary
+{
+  text-decoration:none;
+  color:#2c3e50;
+}
+
+#yesterdaysDaySummary:hover
+{
+  text-decoration:underline;
+}

@@ -1,15 +1,15 @@
 import pprint
 import datetime
 
-from django.shortcuts import render
-
 from django.conf import settings
+from django.shortcuts import render
+from django.views.generic.dates import ArchiveIndexView
 from mongo_access import MongoAccess
 from mysql_access import is_partner_program
 from oracle_access import get_teams_reporting_data
 from splunk_access import SplunkAccess
 
-from mongo_status.models import StatusCount, DetailedStatus, BasicStatus
+from mongo_status.models import StatusCount, DetailedStatus, BasicStatus, DaySummary
 
 def index(request):
     """
@@ -51,7 +51,12 @@ def get_status(request):
         assetId = 0
 
     splunk_access = SplunkAccess()
-    all_splunk_actions = splunk_access.get_all_actions(assetId)
+    # cause splunk kinda takes a long time if I search for everything
+    # I'm just gonna do the previous 2 weeks and make a separate page
+    # for retrieving *all* the actions from splunk for those
+    # that are willing to wait.
+    two_weeks_ago = datetime.datetime.now() + datetime.timedelta(-14)
+    all_splunk_actions = splunk_access.get_actions(assetId, two_weeks_ago)
 
     try:
         # This can happen on an empty datastore
@@ -102,3 +107,49 @@ def complete_details(request, status):
     historical_data = DetailedStatus.objects.filter(connection=settings.MONGO_HOST, status=status).order_by('-generation_time')
     response_dict = {'status': status, 'status_details': status_details, 'historical_data': historical_data}
     return render(request, 'mongo_status/status_details.html', response_dict)
+
+def day_summary(request, year, month, day):
+    """
+    Display the summary for this day.
+    Looks good for a generic view, but ended up being longer and more
+    complicated looking than the straight forward way.
+    """
+    day_to_summarise = datetime.datetime(int(year), int(month), int(day))
+    day_summary = None
+    next_day = None
+    prev_day = None
+
+    try:
+        day_summary = DaySummary.objects.get(connection=settings.SPLUNK_HOST,
+                                             day=day_to_summarise)
+    except DaySummary.DoesNotExist:
+        pass
+
+    try:
+        next_day = DaySummary.objects.get(connection=settings.SPLUNK_HOST,
+                                          day=(day_to_summarise + datetime.timedelta(1)))
+    except DaySummary.DoesNotExist:
+        pass
+
+    try:
+        prev_day = DaySummary.objects.get(connection=settings.SPLUNK_HOST,
+                                          day=(day_to_summarise - datetime.timedelta(1)))
+    except DaySummary.DoesNotExist:
+        pass
+
+    response_dict = {
+        'day_logged'  :day_to_summarise,
+        'day_summary' :day_summary,
+        'next_day'    :next_day,
+        'prev_day'    :prev_day,
+        }
+    return render(request, 'mongo_status/day_summary.html', response_dict)
+
+class DaySummariesView(ArchiveIndexView):
+    """
+    Generic views are classes since django 1.4.
+    """
+    template_name ='mongo_status/day_summaries.html'
+    date_field = 'day'
+    queryset = DaySummary.objects.filter(connection=settings.SPLUNK_HOST)
+    context_object_name = 'day_summaries'

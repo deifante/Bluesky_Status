@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load staticfiles %}
+
 {% block title %}Mongo Status{% endblock %}
 
 {% block content %}
@@ -8,6 +10,12 @@
         <input class="search-query span4" type="text" name="assetId" id="assetId" placeholder="Enter the iStock id you are interested in">
         <input type="submit" value="Search" class="btn btn-primary" />
       </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span12">
+      <h1><a id="yesterdaysDaySummary" href="{% url 'mongo_status:yesterdays_day_summary' %}">Yesterday in Bluesky <img id="daySummaryImageLink" src="{% static "mongo_status/FlatUI/images/icons/Calendar@2x.png" %}" alt="Calendar"></a></h1>
     </div>
   </div>
 
