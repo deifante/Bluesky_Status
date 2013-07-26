@@ -37,6 +37,7 @@
         <td><strong>{{ status_counts.total|intcomma }}</strong></td>
       </tr>
     </table>
+    <p class="text-left"><small>Generated at {{ status_counts.generation_time }}</small></p>
   </div>
 
   <div class="span5">
@@ -44,13 +45,7 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="span12">
-    <p class="text-right"><small>Generated at {{ status_counts.generation_time }}</small></p>
-  </div>
-</div>
-
-<div class="row">
+<div class="row section-ender">
   <div class="span12">
     <div id="historicalStatusGraph"></div>
   </div>

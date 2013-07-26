@@ -5,25 +5,25 @@
 
 {% block content %}
   <div class="row">
-    <div class="span12">
-      <form class="form-search text-center" action="{% url 'mongo_status:get_status' %}" method="get">
+    <div class="span12 text-center">
+      <div class="hero-unit">
+        <h1>Bluesky Reporting Tool</h1>
+        <p>Bluesky data flow and system health</p>
+      </div>
+    </div>    
+  </div>
+
+  <div class="row">
+    <div class="span6">
+      <form class="form-search" action="{% url 'mongo_status:get_status' %}" method="get">
         <input class="search-query span4" type="text" name="assetId" id="assetId" placeholder="Enter the iStock id you are interested in">
         <input type="submit" value="Search" class="btn btn-primary" />
       </form>
     </div>
+    <div class="span6 text-right">
+      <h4 id="daySummaryLinks"><a href="{% url 'mongo_status:yesterdays_day_summary' %}">Yesterday in Bluesky</a> | <a href="{% url 'mongo_status:day_summaries' %}">Available Day Summaries</a></h4>
+    </div>    
   </div>
-
-  <div class="row">
-    <div class="span12">
-      <h1><a id="yesterdaysDaySummary" href="{% url 'mongo_status:yesterdays_day_summary' %}">Yesterday in Bluesky <img id="daySummaryImageLink" src="{% static "mongo_status/FlatUI/images/icons/Calendar@2x.png" %}" alt="Calendar"></a></h1>
-    </div>
-  </div>
-
-  {% comment %} Some #'s regarding the basic bluesky queue status {% endcomment %}
-  {% include 'mongo_status/snippets/queue_snippet.html' %}
-
-  {% comment %} Some #'s regarding the detailed system status {% endcomment %}
-  {% include 'mongo_status/snippets/status_snippet.html' %}
 
   {% if asset %}
     <div class="row">
@@ -168,4 +168,11 @@
     <p>Couldn't find record for &quot;{{ query_value }}&quot;</p>
 
   {% endif %}
+
+  {% comment %} Some #'s regarding the basic bluesky queue status {% endcomment %}
+  {% include 'mongo_status/snippets/queue_snippet.html' %}
+
+  {% comment %} Some #'s regarding the detailed system status {% endcomment %}
+  {% include 'mongo_status/snippets/status_snippet.html' %}
+    
 {% endblock %}
