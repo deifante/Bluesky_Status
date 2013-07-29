@@ -109,8 +109,6 @@ class SplunkAccess:
         if earliest_time:
             kwargs_oneshot['earliest_time'] = earliest_time.isoformat()
 
-        print 'kwargs_oneshot', kwargs_oneshot
-
         search_query_oneshot = 'search "Change to Bluesky File" "Asset ID: %d"' % assetId
         oneshot_results = self.service.jobs.oneshot(search_query_oneshot, **kwargs_oneshot)
         temp = str(oneshot_results)
@@ -229,7 +227,6 @@ class ThreadedSplunkSearch(threading.Thread):
             # probably a 'no JSON object could be decoded' error
             # This was also occuring on the 10th request when paging
             # results with a step of 50 000
-            print e
             if len(search_results) == 0:
                 return
             # If we have results, just continue on with what we have.

@@ -1,4 +1,3 @@
-import pprint
 import datetime
 import Queue
 from optparse import make_option
