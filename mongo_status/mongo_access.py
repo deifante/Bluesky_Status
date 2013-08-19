@@ -4,6 +4,7 @@ from pymongo import Connection, ASCENDING, DESCENDING
 
 from django.core.cache import cache
 from django.conf import settings
+import django.utils.timezone
 
 from mongo_status.models import StatusCount, DetailedStatus, BasicStatus
 
@@ -65,7 +66,7 @@ class MongoAccess:
         total = self.assets_collection.count();
 
         counts = \
-            {'generation_time': datetime.datetime.now().strftime('%A %B %d %Y %H:%M:%S'),
+            {'generation_time': django.utils.timezone.now().strftime('%A %B %d %Y %H:%M:%S'),
              'complete'  : self.assets_collection.find({'partnerData.getty.status':'complete'}, slave_okay=True, await_data=False).count(),
              'error'     : self.assets_collection.find({'partnerData.getty.status':'error'}, slave_okay=True, await_data=False).count(),
              'pending'   : self.assets_collection.find({'partnerData.getty.status':'pending'}, slave_okay=True, await_data=False).count(),
@@ -90,7 +91,7 @@ class MongoAccess:
         in serial on a system in flux so the numbers may not add up nicely.
         """
         status_details = \
-            {'generation_time'  : datetime.datetime.now().strftime('%A %B %d %Y %H:%M:%S'),
+            {'generation_time'  : django.utils.timezone.now().strftime('%A %B %d %Y %H:%M:%S'),
              'total'            : self.assets_collection.find({'partnerData.getty.status':status}, slave_okay=True, await_data=False).count(),
              'updates'          : self.assets_collection.find({'partnerData.getty.status':status, 'priority':{'$gte': 0,  '$lte': 4}}, slave_okay=True, await_data=False).count(),
              'new'              : self.assets_collection.find({'partnerData.getty.status':status, 'priority':{'$gte': 10, '$lte': 14}}, slave_okay=True, await_data=False).count(),
@@ -148,7 +149,7 @@ class MongoAccess:
         """
         basic_counts = \
             {
-            'update' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':0,  '$lte':14}}, slave_okay=True, await_data=True).count(),
+            'update' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':0,  '$lte':4}}, slave_okay=True, await_data=True).count(),
             'new'    : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':10, '$lte':14}}, slave_okay=True, await_data=True).count(),
             'delete' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':50, '$lte':54}}, slave_okay=True, await_data=True).count()
             }

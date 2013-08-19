@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Complete History Graphs{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="{% url 'mongo_status:index' %}">System Status</a> <span class="divider">/</span></li>
+  <li class="active">Documentation</li>
+</ul>
+{% endblock breadcrumb %}
+
+
+{% block content %}
+<div class="row">
+  <div class="span12">
+    <h1>Bluesky Rule Engine</h1>
+    <p>The 'rule engine' decides which files are valid for Bluesky and which are not. Starting at the top Getty 'Rule Suite' we follow the arrows until we're at the end of a path. If a file passes all of the rules in a suite then that file qualifies for Bluesky distribution. <a href="{% static "mongo_status/misc/RuleEngine.pdf" %}">.pdf</a></p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12">
+    <h1>Bluesky Mongo Record</h1>
+    <p>A large chunk of the bookkeeping for Bluesky happens in Mongo. <a href="{% static "mongo_status/misc/BlueskyMongoRecord.pdf" %}">This pdf</a> details how the mongo record works.</p>
+  </div>
+</div>
+{% endblock content %}

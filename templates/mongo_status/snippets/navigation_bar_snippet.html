@@ -1,0 +1,35 @@
+<div class="row">
+  <div class="span12">
+    
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+
+          <form class="navbar-search" action="{% url 'mongo_status:get_status' %}" method="get">
+            <input type="text" class="search-query" name="assetId" id="assetId" placeholder="Search iStock IDs">
+          </form>
+          
+          <div class="nav-collapse collapse" id="nav-collapse-01">
+          <ul class="nav">
+            <li><a href="{% url 'mongo_status:yesterdays_day_summary' %}">Yesterday In Bluesky</a></li>
+            <li><a href="{% url 'mongo_status:day_summaries' %}">Day Summaries</a></li>
+            <li>
+              <a href="{% url 'mongo_status:complete_graphs' %}">Complete History Graphs</a>
+              <ul>
+                <li><a href="{% url 'mongo_status:complete_queue_status' %}">Queue Status</a></li>
+                <li><a href="{% url 'mongo_status:complete_details' 'complete' %}">Complete</a></li>
+                <li><a href="{% url 'mongo_status:complete_details' 'error' %}">Error</a></li>
+                <li><a href="{% url 'mongo_status:complete_details' 'pending' %}">Pending</a></li>
+                <li><a href="{% url 'mongo_status:complete_details' 'processing' %}">Processing</a></li>
+              </ul>
+            </li>
+            <li><a href="{% url 'mongo_status:documentation' %}">Documentation</a></li>
+          </ul>
+          </div><!-- nav-collapse-01 -->
+
+        </div><!-- class="container" -->
+      </div><!-- class="navbar-inner" -->
+    </div><!-- class="navbar" -->
+
+  </div><!-- class="span12" -->
+</div><!-- class="row" -->

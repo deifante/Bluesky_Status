@@ -45,11 +45,24 @@
   </div>
 </div>
 
-<div class="row section-ender">
+<div class="row">
   <div class="span12">
     <div id="historicalStatusGraph"></div>
   </div>
 </div>
+
+<div class="row section-ender graph-description">
+  <div class="span12">
+    <p>The above graph displays only the last week of history. Complete history can be found <a href="{% url 'mongo_status:complete_graphs' %}">here.</a></p>
+    <ul>
+      <li><strong class="text-complete">Complete</strong> files have been synchronised with Getty.</li>
+      <li><strong class="text-error">Error</strong> files have had an ingestion issue along the way.</li>
+      <li><strong class="text-pending">Pending</strong> files have changes that are ready to go to Getty.</li>
+      <li><strong class="text-processing">Processing</strong> files are currently in transit to Getty.</li>
+      <li><strong>Undetermined</strong> files have an unknown status (partnerData.getty.status)</li>
+    </ul>
+  </div>
+</div><!-- class="row" -->
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">

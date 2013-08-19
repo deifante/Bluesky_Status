@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Complete History Graphs{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+  <li><a href="{% url 'mongo_status:index' %}">System Status</a> <span class="divider">/</span></li>
+  <li class="active">Complete History Graphs</li>
+</ul>
+{% endblock breadcrumb %}
+
+{% block content %}
+<div class="row">
+  <div class="span12">
+    <div class="page-header">
+      <h1>Complete History Graphs</h1>
+    </div>
+    <p>Complete history graphs are different from the graphs on the front page in that they show all recorded history. This can take a while, please be patient when attempting to view one of these graphs.</p>
+  </div>
+</div>
+
+<ul>
+  <li><a href="{% url 'mongo_status:complete_queue_status' %}">Complete Queue Status</a></li>
+  <li>
+    System Status Graphs
+    <ul>
+      <li><a href="{% url 'mongo_status:complete_details' 'complete' %}">Complete Files</a></li>
+      <li><a href="{% url 'mongo_status:complete_details' 'error' %}">Errored Files</a></li>
+      <li><a href="{% url 'mongo_status:complete_details' 'pending' %}">Pending Files</a></li>
+      <li><a href="{% url 'mongo_status:complete_details' 'processing' %}">Processing Files</a></li>
+    </ul>
+  </li>
+</ul>
+{% endblock content %}
+

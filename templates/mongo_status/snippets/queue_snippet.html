@@ -43,12 +43,26 @@
   </div><!-- class="span5" -->
 </div><!-- class="row" -->
 
-<div class="row section-ender">
+<div class="row">
   <div class="span12">
     <div id="historicalBasicStatusGraph"></div>
   </div><!-- class="span12" -->
 </div><!-- class="row" -->
 
+<div class="row section-ender graph-description">
+  <div class="span12">
+    {% if not viewing_complete_history %}
+      <p>The above graph displays only the last week of history. A complete history can be found <a href="{% url 'mongo_status:complete_queue_status' %}">here.</a></p>
+    {% endif %}
+    <ul>
+      <li><strong class="text-delete">Delete</strong> files are files with priority <strong class="text-delete">50-54</strong>. These are files that are no longer valid for sharing.</li>
+      <li><strong class="text-new">New</strong> files are files with priority <strong class="text-new">10-14</strong>. These are files that Bluesky thinks are new to Getty.</li>
+      <li><strong class="text-update">Update</strong> files are files with priority <strong class="text-update">0-4</strong>. These files have been changed on iStock and require an update on Getty.</li>
+      <li>All files counted must have a <strong class="text-pending">'pending'</strong> status and cannot have a <strong class="text-currently-migrating">'migrated'</strong> (partnerData.getty.migrated) flag.</li>
+    </ul>
+    <p>Files with higher priority are dealt with before files with lower priority.</p>
+  </div><!-- class="span12" -->
+</div><!-- class="row" -->
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
@@ -99,7 +113,14 @@
     ]);
 
     // Set chart options
-    var options = {'title': 'Historical Bluesky Queue Status',
+    {% comment %} I might live to regret writing conditional javascript via django templates {% endcomment %}
+    var title = 'Historical Bluesky Queue Status';
+    {% if not viewing_complete_history %}
+      title += ' (one week)';
+    {% else %}
+      title += ' (complete history)';
+    {% endif %}
+    var options = {'title': title,
                    'chartArea': {width:700},
                    'colors': ['#1ABC9C', '#2ECC71', '#E74C3C']};
     var chart = new google.visualization.LineChart(document.getElementById('historicalBasicStatusGraph'));

@@ -1,7 +1,10 @@
+import datetime
+
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
 from django.conf import settings
+import django.utils.timezone
 
 from pymongo import Connection
 
@@ -34,6 +37,30 @@ class MongoStatusIndexViewTests(TestCase):
         self.assertContains(response, 456)
         self.assertContains(response, 567)
         self.assertContains(response, 678)
+
+    def test_index_view_old_record(self):
+        """
+        On the main page I only want to display a week's worth of data to reduce
+        page size.
+        """
+        # I'm not quite sure yet how to work with timezones properly.
+        # django tells me that 'two_weeks_ago' is aware when I run
+        # django.utils.timezone.is_aware but then the unit test
+        # informs me that it's recieved an naive object.
+        two_weeks_ago = django.utils.timezone.now() - datetime.timedelta(1)
+        StatusCount.objects.create(
+             generation_time=two_weeks_ago, complete=123, error=234, pending=345,
+            processing=456, undetermined=567, total=678)
+        
+        response = self.client.get(reverse('mongo_status:index'));
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<td class="text-complete">123</td>')
+        print response
+        # self.assertNotContains(response, 234, html=True)
+        # self.assertNotContains(response, 345, html=True)
+        # self.assertNotContains(response, 456, html=True)
+        # self.assertNotContains(response, 567, html=True)
+        # self.assertNotContains(response, 678, html=True)
 
 @override_settings(MONGO_HOST='127.0.0.1')
 @override_settings(SPLUNK_HOST='localhost')

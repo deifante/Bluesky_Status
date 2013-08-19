@@ -70,3 +70,24 @@
 {
   margin-top:7px;
 }
+
+.graph-description
+{
+  margin-top:35px;
+}
+
+.navbar .nav > li > a
+{
+  padding: 16px 20px 15px;
+}
+
+.navbar-search .search-query
+{
+  margin-top:5px;
+  margin-left:10px;
+}
+
+.explanation-paragraphs p
+{
+  margin-bottom:40px;
+}

@@ -1,9 +1,12 @@
 import pprint
 import datetime
 
+import django.utils.timezone
 from django.conf import settings
 from django.shortcuts import render
 from django.views.generic.dates import ArchiveIndexView
+from django.views.generic.base import TemplateView
+
 from mongo_access import MongoAccess
 from mysql_access import is_partner_program
 from oracle_access import get_teams_reporting_data
@@ -23,14 +26,33 @@ def index(request):
         status_counts = StatusCount.objects.filter(connection=settings.MONGO_HOST).latest()
     except StatusCount.DoesNotExist:
         status_counts = None
-    historical_status = StatusCount.objects.filter(connection=settings.MONGO_HOST).order_by('-generation_time')
+    # Used to display all history here. Now it's become too much so we're just
+    # keeping it to one week now
+    one_week_ago = datetime.datetime.now() - datetime.timedelta(7)
+    historical_status = StatusCount.objects.filter(connection=settings.MONGO_HOST).\
+                        filter(generation_time__gt=one_week_ago).order_by('-generation_time')
     basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).latest()
-    historical_basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).order_by('-generation_time')
+    historical_basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).\
+                              filter(generation_time__gt=one_week_ago).order_by('-generation_time')
+
     return render(request, 'mongo_status/index.html',
                   {'status_counts':status_counts,
                    'historical_basic_status': historical_basic_status,
                    'basic_status':basic_status,
                    'historical_status':historical_status})
+
+def complete_queue_status(request):
+    """
+    Since the front page now only displays a week of history, this view
+    will provide all the history we've got @ the cost of a hefty page weight.
+    """
+    basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).latest()
+    historical_basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).\
+                              order_by('-generation_time')
+    return render(request, 'mongo_status/complete_queue_status.html',
+                  {'basic_status':basic_status,
+                   'viewing_complete_history': True,
+                   'historical_basic_status':historical_basic_status})
 
 def get_status(request):
     """
@@ -38,9 +60,12 @@ def get_status(request):
     """
     asset = None
     mongo_access = MongoAccess()
-    historical_status = StatusCount.objects.filter(connection=settings.MONGO_HOST).order_by('-generation_time')
+    one_week_ago = datetime.datetime.now() - datetime.timedelta(7)
+    historical_status = StatusCount.objects.filter(connection=settings.MONGO_HOST).\
+                        filter(generation_time__gt=one_week_ago).order_by('-generation_time')
     basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).latest()
-    historical_basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).order_by('-generation_time')
+    historical_basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).\
+                              filter(generation_time__gt=one_week_ago).order_by('-generation_time')
 
     try:
         # if we happen to be in this view without the assumed get param
@@ -108,6 +133,15 @@ def complete_details(request, status):
     response_dict = {'status': status, 'status_details': status_details, 'historical_data': historical_data}
     return render(request, 'mongo_status/status_details.html', response_dict)
 
+def yesterdays_day_summary(request):
+    """
+    Several attempts at making this work via the view only have not worked out
+    the way I desire.
+    """
+    yesterday = django.utils.timezone.now() - datetime.timedelta(1)
+    print 'yesterday', yesterday
+    return day_summary(request, yesterday.year, yesterday.month, yesterday.day)
+
 def day_summary(request, year, month, day):
     """
     Display the summary for this day.
@@ -153,3 +187,17 @@ class DaySummariesView(ArchiveIndexView):
     date_field = 'day'
     queryset = DaySummary.objects.filter(connection=settings.SPLUNK_HOST)
     context_object_name = 'day_summaries'
+
+class CompleteGraphsView(TemplateView):
+    """
+    The graphs on the front page have too many data points to graph on every
+    page load. This view will provide a list of graphs that people can view for
+    the entire history if they want to endure the page load time.
+    """
+    template_name = 'mongo_status/complete_graphs.html'
+
+class DocumentationView(TemplateView):
+    """
+    I don't expect the documentation to require much interaction.
+    """
+    template_name = 'mongo_status/documentation.html'

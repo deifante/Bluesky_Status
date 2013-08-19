@@ -4,8 +4,7 @@ from django.db import models
 
 class StatusCount(models.Model):
     """
-    Records historical information from MongoAccess.get_status_counts with the
-    goal being to be able to graph this information at a later date.
+    Records historical information from MongoAccess.get_status_counts.
     """
     generation_time = models.DateTimeField(auto_now_add=True, help_text='The time this information was generated.')
     connection = models.IPAddressField(default = '127.0.0.1', help_text='The server this data was gathered from.')
