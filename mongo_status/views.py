@@ -8,7 +8,7 @@ from django.views.generic.dates import ArchiveIndexView
 from django.views.generic.base import TemplateView
 
 from mongo_access import MongoAccess
-from mysql_access import is_partner_program
+from mysql_access import is_partner_program, get_file_type
 from oracle_access import get_teams_reporting_data
 from splunk_access import SplunkAccess
 
@@ -60,7 +60,7 @@ def get_status(request):
     """
     asset = None
     mongo_access = MongoAccess()
-    one_week_ago = datetime.datetime.now() - datetime.timedelta(7)
+    one_week_ago = django.utils.timezone.now() - datetime.timedelta(7)
     historical_status = StatusCount.objects.filter(connection=settings.MONGO_HOST).\
                         filter(generation_time__gt=one_week_ago).order_by('-generation_time')
     basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).latest()
@@ -91,6 +91,7 @@ def get_status(request):
 
     response_dict = {'query_value'            : assetId,
                      'is_partner_program'     : is_partner_program(assetId),
+                     'file_type'              : get_file_type(assetId),
                      'teams_reporting_data'   : get_teams_reporting_data(assetId),
                      'status_counts'          : status_counts,
                      'historical_basic_status': historical_basic_status,
