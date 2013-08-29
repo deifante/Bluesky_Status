@@ -9,6 +9,8 @@
           <p>Unknown Asset Status: &quot;{{ asset.partnerData.getty.status }}&quot;</p>
         {% endif %}
 
+        <h2>System</h2>
+
         {% comment %} Getty ID {% endcomment %}
         {% if asset.partnerData.getty.partnerId %}
           <p>The <strong><abbr title="Also known as the 'Master ID' to those from Getty.">Getty Id</abbr></strong> for this file: {{ asset.partnerData.getty.partnerId }}</p>
@@ -62,8 +64,64 @@
 
         {% comment %} It's useful to see the file type {% endcomment %}
         {% if file_type %}
-          <p>File type:<strong>{{file_type|title}}</strong></p>
+          <p>File type: <strong>{{file_type|title}}</strong></p>
         {% endif %}
+
+        {% comment %} This is when the file was approved by iStock {% endcomment %}
+        {% if approval_time %}
+          <p>Approval Date: <strong>{{ approval_time }}</strong></p>
+        {% endif %}
+
+        {% comment %} This is the time that the file was uploaded to iStock {% endcomment %}
+        {% if upload_time %}
+          <p>Upload Date: <strong>{{ upload_time }}</strong></p>
+        {% endif %}
+
+        {% comment %} The standing of this file on iStock {% endcomment %}
+        {% if file_status %}
+          <p>iStock File Status: <strong>{{ file_status }}</strong></p>
+        {% endif %}
+
+        {% comment %} The collection this file is in {% endcomment %}
+        {% if collection %}
+          <p>iStock File Collection: <strong>{{ collection }}</strong></p>
+        {% endif %}
+
+        {% comment %} The previous collection this file was in and when that was changed {% endcomment %}
+        {% if previous_collections %}
+          <p>Previous iStock File Collection(s):
+            <ul>
+              {% for collection in previous_collections %}
+                <li>changed to <strong>{{ collection.previous_collection_name }}</strong> @ <strong>{{ collection.previous_collection_date_changed }}</strong></li>
+              {% endfor %}
+            </ul>
+          </p>
+        {% endif %}
+
+        <h2>Contributor</h2>
+        {% comment %} The contributor name/ID {% endcomment %}
+        {% if contributor_names %}
+          <p>Contributor name: (User Id:<strong>{{ contributor_names.userId }}</strong>)
+            <ul>
+              <li>user:<strong>{{ contributor_names.username }}</strong></li>
+              <li>real:<strong>{{ contributor_names.first|title }} {{ contributor_names.last|title }}</strong></li>
+              <li>studio:<strong>{{ contributor_names.studio_name }}</strong></li>
+            </ul>
+          </p>
+        {% endif %}
+
+        {% comment %} The file types this contributor is exclusive for {% endcomment %}
+        {% if contributor_exclusivity %}
+          <p>Exclusive for:
+            <ul>
+              {% for exclusivity in contributor_exclusivity %}
+                <li>{{ exclusivity }}</li>
+              {% endfor %}
+            </ul>
+          </p>
+        {% endif %}
+
+
       </div><!-- well -->
   </div><!-- span12 -->
 </div><!-- row -->

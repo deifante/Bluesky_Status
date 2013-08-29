@@ -8,7 +8,7 @@ from django.views.generic.dates import ArchiveIndexView
 from django.views.generic.base import TemplateView
 
 from mongo_access import MongoAccess
-from mysql_access import is_partner_program, get_file_type
+from mysql_access import is_partner_program, get_file_type, get_approval_time, get_upload_time, get_file_status, get_collection, get_previous_collections, get_contributor_names, get_contributor_exclusivity
 from oracle_access import get_teams_reporting_data
 from splunk_access import SplunkAccess
 
@@ -92,6 +92,13 @@ def get_status(request):
     response_dict = {'query_value'            : assetId,
                      'is_partner_program'     : is_partner_program(assetId),
                      'file_type'              : get_file_type(assetId),
+                     'approval_time'          : get_approval_time(assetId),
+                     'upload_time'            : get_upload_time(assetId),
+                     'file_status'            : get_file_status(assetId),
+                     'collection'             : get_collection(assetId),
+                     'previous_collections'   : get_previous_collections(assetId),
+                     'contributor_names'      : get_contributor_names(assetId),
+                     'contributor_exclusivity': get_contributor_exclusivity(assetId),
                      'teams_reporting_data'   : get_teams_reporting_data(assetId),
                      'status_counts'          : status_counts,
                      'historical_basic_status': historical_basic_status,
