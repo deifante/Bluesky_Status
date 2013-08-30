@@ -103,7 +103,9 @@ def get_contributor_names(assetId):
     query = 'select `user`.userID, `user`.username, `user`.`first`, `user`.`last`, `user`.studio_name from `user` inner join AbstractFile on `user`.userID = AbstractFile.UserID where AbstractFile.ID = %d' % assetId
     cursor.execute(query)
     data = cursor.fetchone()
-    return {'userId':data[0], 'username':data[1], 'first':data[2], 'last':data[3], 'studio_name':data[4]}
+    if data:
+        return {'userId':data[0], 'username':data[1], 'first':data[2], 'last':data[3], 'studio_name':data[4]}
+    return None
 
 def get_contributor_exclusivity(assetId):
     connection = MySQLdb.connect('reporting2.istockphoto.com', 'maint', 'ngTX6Kupa$c', 'istockphoto')
