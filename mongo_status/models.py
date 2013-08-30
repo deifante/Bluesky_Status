@@ -1,12 +1,13 @@
 import datetime
 
 from django.db import models
+import django.utils.timezone
 
 class StatusCount(models.Model):
     """
     Records historical information from MongoAccess.get_status_counts.
     """
-    generation_time = models.DateTimeField(auto_now_add=True, help_text='The time this information was generated.')
+    generation_time = models.DateTimeField(default=django.utils.timezone.now(), help_text='The time this information was generated.')
     connection = models.IPAddressField(default = '127.0.0.1', help_text='The server this data was gathered from.')
     complete = models.BigIntegerField(default=0, help_text='The count of how many records are in complete status.')
     error = models.BigIntegerField(default=0, help_text='The count of how many records are in error status.')

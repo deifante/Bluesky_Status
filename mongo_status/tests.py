@@ -29,35 +29,29 @@ class MongoStatusIndexViewTests(TestCase):
         """
         StatusCount.objects.create(
             complete=123, error=234, pending=345, processing=456,
-            undetermined=567, total = 678, connection=settings.MONGO_HOST)
+            undetermined=567, total = 678)
         response = self.client.get(reverse('mongo_status:index'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 123)
-        self.assertContains(response, 234)
-        self.assertContains(response, 345)
-        self.assertContains(response, 456)
-        self.assertContains(response, 567)
-        self.assertContains(response, 678)
+        # This line appears when we attempt to graph the data
+        self.assertContains(response, '123, 234, 345, 456')
 
     def test_index_view_old_record(self):
         """
         On the main page I only want to display a week's worth of data to reduce
         page size.
         """
-        two_weeks_ago = django.utils.timezone.now() - datetime.timedelta(1)
+        two_weeks_ago = django.utils.timezone.now() - datetime.timedelta(14)
         StatusCount.objects.create(
              generation_time=two_weeks_ago, complete=123, error=234, pending=345,
             processing=456, undetermined=567, total=678)
 
-        response = self.client.get(reverse('mongo_status:index'));
+        response = self.client.get(reverse('mongo_status:index'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '<td class="text-complete">123</td>')
-        self.assertContains(response, '<td class="text-error">234</td>')
-        self.assertContains(response, '<td class="text-pending">345</td>')
-        self.assertContains(response, '<td class="text-processing">456</td>')
-        self.assertContains(response, '<td class="text-undetermined">567</td>')
-        self.assertContains(response, '<td><strong>678</strong></td>')
+        # This line appears when we attempt to graph the data
+        # since it's connected to an old status count it shouldn't
+        # show up in the graphing.
+        self.assertNotContains(response, '123, 234, 345, 456')
 
 @override_settings(MONGO_DATABASE='bluesky-test')
 @override_settings(MONGO_HOST='127.0.0.1')
@@ -331,6 +325,8 @@ class MongoStatusCompleteDetailsViewTests(TestCase):
         self.assertContains(response, 8910)
         self.assertContains(response, 91011)
 
+@override_settings(MONGO_DATABASE='bluesky-test')
+@override_settings(MONGO_HOST='127.0.0.1')
 @override_settings(SPLUNK_HOST='localhost')
 @override_settings(SPLUNK_PORT=8089)
 @override_settings(SPLUNK_USERNAME='admin')
