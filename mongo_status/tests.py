@@ -10,6 +10,7 @@ from pymongo import Connection
 
 from mongo_status.models import StatusCount, DetailedStatus, BasicStatus
 
+@override_settings(MONGO_HOST='127.0.0.1')
 class MongoStatusIndexViewTests(TestCase):
     def setUp(self):
         BasicStatus.objects.create(connection=settings.MONGO_HOST, update=123, new=234, delete=345)
@@ -43,24 +44,20 @@ class MongoStatusIndexViewTests(TestCase):
         On the main page I only want to display a week's worth of data to reduce
         page size.
         """
-        # I'm not quite sure yet how to work with timezones properly.
-        # django tells me that 'two_weeks_ago' is aware when I run
-        # django.utils.timezone.is_aware but then the unit test
-        # informs me that it's recieved an naive object.
         two_weeks_ago = django.utils.timezone.now() - datetime.timedelta(1)
         StatusCount.objects.create(
              generation_time=two_weeks_ago, complete=123, error=234, pending=345,
             processing=456, undetermined=567, total=678)
-        
+
         response = self.client.get(reverse('mongo_status:index'));
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<td class="text-complete">123</td>')
-        print response
-        # self.assertNotContains(response, 234, html=True)
-        # self.assertNotContains(response, 345, html=True)
-        # self.assertNotContains(response, 456, html=True)
-        # self.assertNotContains(response, 567, html=True)
-        # self.assertNotContains(response, 678, html=True)
+        self.assertContains(response, '<td class="text-error">234</td>')
+        self.assertContains(response, '<td class="text-pending">345</td>')
+        self.assertContains(response, '<td class="text-processing">456</td>')
+        self.assertContains(response, '<td class="text-undetermined">567</td>')
+        self.assertContains(response, '<td><strong>678</strong></td>')
+
 
 @override_settings(MONGO_HOST='127.0.0.1')
 @override_settings(SPLUNK_HOST='localhost')
