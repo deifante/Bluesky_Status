@@ -7,10 +7,10 @@ from django.shortcuts import render
 from django.views.generic.dates import ArchiveIndexView
 from django.views.generic.base import TemplateView
 
+import mysql_access
 from mongo_access import MongoAccess
-from mysql_access import is_partner_program, get_file_type, get_approval_time, get_upload_time, get_file_status, get_collection, get_previous_collections, get_contributor_names, get_contributor_exclusivity
-from oracle_access import get_teams_reporting_data
 from splunk_access import SplunkAccess
+from oracle_access import get_teams_reporting_data
 
 from mongo_status.models import StatusCount, DetailedStatus, BasicStatus, DaySummary
 
@@ -28,7 +28,7 @@ def index(request):
         status_counts = None
     # Used to display all history here. Now it's become too much so we're just
     # keeping it to one week now
-    one_week_ago = datetime.datetime.now() - datetime.timedelta(7)
+    one_week_ago = django.utils.timezone.now() - datetime.timedelta(7)
     historical_status = StatusCount.objects.filter(connection=settings.MONGO_HOST).\
                         filter(generation_time__gt=one_week_ago).order_by('-generation_time')
     basic_status = BasicStatus.objects.filter(connection=settings.MONGO_HOST).latest()
@@ -90,15 +90,16 @@ def get_status(request):
         status_counts = None
 
     response_dict = {'query_value'            : assetId,
-                     'is_partner_program'     : is_partner_program(assetId),
-                     'file_type'              : get_file_type(assetId),
-                     'approval_time'          : get_approval_time(assetId),
-                     'upload_time'            : get_upload_time(assetId),
-                     'file_status'            : get_file_status(assetId),
-                     'collection'             : get_collection(assetId),
-                     'previous_collections'   : get_previous_collections(assetId),
-                     'contributor_names'      : get_contributor_names(assetId),
-                     'contributor_exclusivity': get_contributor_exclusivity(assetId),
+                     'is_partner_program'     : mysql_access.is_partner_program(assetId),
+                     'file_type'              : mysql_access.get_file_type(assetId),
+                     'approval_time'          : mysql_access.get_approval_time(assetId),
+                     'upload_time'            : mysql_access.get_upload_time(assetId),
+                     'file_status'            : mysql_access.get_file_status(assetId),
+                     'collection'             : mysql_access.get_collection(assetId),
+                     'previous_collections'   : mysql_access.get_previous_collections(assetId),
+                     'contributor_names'      : mysql_access.get_contributor_names(assetId),
+                     'contributor_exclusivity': mysql_access.get_contributor_exclusivity(assetId),
+                     'contributor_email'      : mysql_access.get_contributor_email(assetId),
                      'teams_reporting_data'   : get_teams_reporting_data(assetId),
                      'status_counts'          : status_counts,
                      'historical_basic_status': historical_basic_status,

@@ -111,3 +111,16 @@ def get_contributor_exclusivity(assetId):
     query = 'select tbl_AbstractFileTypeGroup.Name from ExclusivityUser inner join tbl_AbstractFileTypeGroup on tbl_AbstractFileTypeGroup.ExclusivityID = ExclusivityUser.ExclusivityID inner join AbstractFile on AbstractFile.UserID =  ExclusivityUser.UserID where AbstractFile.ID = %d' % assetId
     cursor.execute(query)
     return cursor.fetchone()
+
+def get_contributor_email(assetId):
+    connection = MySQLdb.connect('reporting2.istockphoto.com', 'maint', 'ngTX6Kupa$c', 'istockphoto')
+    cursor = connection.cursor()
+    query = 'select `user`.email from `user` inner join AbstractFile on `user`.userID = AbstractFile.UserID where AbstractFile.ID = %d' % assetId
+    cursor.execute(query)
+    
+    data = cursor.fetchone()
+
+    if not data:
+        return None
+        # Data is returned in a tuple.
+    return data[0]

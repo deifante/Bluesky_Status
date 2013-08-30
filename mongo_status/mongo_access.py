@@ -159,4 +159,3 @@ class MongoAccess:
             delete = basic_counts['delete'],connection = self.connection.host
             )
         return basic_count
-            
