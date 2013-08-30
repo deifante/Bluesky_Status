@@ -103,9 +103,15 @@
         {% if contributor_names %}
           <p>Contributor name: (User Id:<strong>{{ contributor_names.userId }}</strong>)
             <ul>
-              <li>user:<strong>{{ contributor_names.username }}</strong></li>
-              <li>real:<strong>{{ contributor_names.first|title }} {{ contributor_names.last|title }}</strong></li>
-              <li>studio:<strong>{{ contributor_names.studio_name }}</strong></li>
+              {% if contributor_names.username %}
+                <li>user: <strong>{{ contributor_names.username }}</strong></li>
+              {% endif %}
+              {% if contributor_names.first or contributor_names.last %}
+                <li>real: <strong>{{ contributor_names.first|title }} {{ contributor_names.last|title }}</strong></li>
+              {% endif %}
+              {% if contributor_names.studio_name %}
+                <li>studio: <strong>{{ contributor_names.studio_name }}</strong></li>
+              {% endif %}
             </ul>
           </p>
         {% endif %}
@@ -123,7 +129,7 @@
 
         {% comment %} e-mail address of contributor {% endcomment %}
         {% if contributor_email %}
-          <p>Email Address:<strong>{{ contributor_email }}</strong></p>
+          <p>Email Address: <strong>{{ contributor_email }}</strong></p>
         {% endif %}
 
       </div><!-- well -->

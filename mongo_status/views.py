@@ -126,7 +126,7 @@ def get_status(request):
         pretty_asset = pprint.pformat(asset)
         response_dict['pretty_asset'] = pretty_asset
 
-    return render(request, 'mongo_status/index.html', response_dict)
+    return render(request, 'mongo_status/full_asset.html', response_dict)
 
 def complete_details(request, status):
     """
@@ -148,7 +148,6 @@ def yesterdays_day_summary(request):
     the way I desire.
     """
     yesterday = django.utils.timezone.now() - datetime.timedelta(1)
-    print 'yesterday', yesterday
     return day_summary(request, yesterday.year, yesterday.month, yesterday.day)
 
 def day_summary(request, year, month, day):
