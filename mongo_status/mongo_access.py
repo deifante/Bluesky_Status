@@ -34,7 +34,7 @@ class MongoAccess:
         Make a local reference to the assets collection and return it just for
         luls.
         """
-        self.assets_collection = self.connection.bluesky.assets
+        self.assets_collection = self.connection[settings.MONGO_DATABASE].assets
         return self.assets_collection
 
     def get_asset(self, assetId):

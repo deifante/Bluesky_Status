@@ -10,6 +10,7 @@ from pymongo import Connection
 
 from mongo_status.models import StatusCount, DetailedStatus, BasicStatus
 
+@override_settings(MONGO_DATABASE='bluesky-test')
 @override_settings(MONGO_HOST='127.0.0.1')
 class MongoStatusIndexViewTests(TestCase):
     def setUp(self):
@@ -58,7 +59,7 @@ class MongoStatusIndexViewTests(TestCase):
         self.assertContains(response, '<td class="text-undetermined">567</td>')
         self.assertContains(response, '<td><strong>678</strong></td>')
 
-
+@override_settings(MONGO_DATABASE='bluesky-test')
 @override_settings(MONGO_HOST='127.0.0.1')
 @override_settings(SPLUNK_HOST='localhost')
 @override_settings(SPLUNK_PORT=8089)
@@ -95,7 +96,7 @@ class MongoStatusGetStatusViewTests(TestCase):
             }
 
         mongo_connection = Connection()
-        assets_collection = mongo_connection.bluesky.assets
+        assets_collection = mongo_connection[settings.MONGO_DATABASE].assets
         assets_collection.insert(asset_dict)
         StatusCount.objects.create(
             complete=123, error=234, pending=345, processing=456,
@@ -114,6 +115,7 @@ class MongoStatusGetStatusViewTests(TestCase):
         self.assertContains(response, 2048)
         assets_collection.remove({'assetId':assetId})
 
+@override_settings(MONGO_DATABASE='bluesky-test')
 @override_settings(MONGO_HOST='127.0.0.1')
 @override_settings(SPLUNK_HOST='localhost')
 @override_settings(SPLUNK_PORT=8089)
@@ -135,7 +137,7 @@ class MongoStatusGetStatusViewAttributesOfNoteTests(TestCase):
         can be removed later.
         """
         mongo_connection = Connection()
-        assets_collection = mongo_connection.bluesky.assets
+        assets_collection = mongo_connection[settings.MONGO_DATABASE].assets
         assets_collection.insert(asset)
         return assets_collection
 

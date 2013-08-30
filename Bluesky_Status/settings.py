@@ -27,6 +27,7 @@ DATABASES = {
 # MONGO_HOST = '127.0.0.1'                 # local
 # MONGO_HOST = '10.2.241.213'              # dev
 MONGO_HOST = '10.2.106.180'                # 'cf-mongo3.istockphoto.com' # live
+MONGO_DATABASE = 'bluesky'                 # so I can have a different mongo db during test
 
 # Splunk host will determine the splunk server that we expect has the logs
 # relating to the the files we are interested in.
