@@ -4,8 +4,6 @@
 {% block title %}Mongo Status{% endblock %}
 
 {% block content %}
-  {% include 'mongo_status/snippets/navigation_bar_snippet.html' %}
-
   {% if asset %}
     {% comment %} Details from various data stores about this asset {% endcomment %}
     {% include 'mongo_status/snippets/attributes_of_note_snippet.html' %}

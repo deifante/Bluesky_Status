@@ -17,7 +17,7 @@
         {% endif %}
 
         {% comment %} Is this file in the partner program? {% endcomment %}
-        {% if is_partner_program %}
+        {% if istock_asset.in_partner_program %}
           <p>This asset is <strong>in</strong> the <strong>Partner Program</strong>.</p>
         {% else %}
           <p>This asset is <strong>not</strong> in the <strong>Partner Program</strong>.</p>
@@ -63,73 +63,71 @@
         {% endif %}
 
         {% comment %} It's useful to see the file type {% endcomment %}
-        {% if file_type %}
-          <p>File type: <strong>{{file_type|title}}</strong></p>
+        {% if istock_asset.file_type %}
+          <p>File type: <strong>{{ istock_asset.file_type|title }}</strong></p>
         {% endif %}
 
         {% comment %} This is when the file was approved by iStock {% endcomment %}
-        {% if approval_time %}
-          <p>Approval Date: <strong>{{ approval_time }}</strong></p>
+        {% if istock_asset.approval_time %}
+          <p>Approval Date: <strong>{{ istock_asset.approval_time }}</strong></p>
         {% endif %}
 
         {% comment %} This is the time that the file was uploaded to iStock {% endcomment %}
-        {% if upload_time %}
-          <p>Upload Date: <strong>{{ upload_time }}</strong></p>
+        {% if istock_asset.creation_date %}
+          <p>Upload Date: <strong>{{ istock_asset.creation_date }}</strong></p>
         {% endif %}
 
         {% comment %} The standing of this file on iStock {% endcomment %}
-        {% if file_status %}
-          <p>iStock File Status: <strong>{{ file_status }}</strong></p>
+        {% if istock_asset.status %}
+          <p>iStock File Status: <strong>{{ istock_asset.status }}</strong></p>
         {% endif %}
 
         {% comment %} The collection this file is in {% endcomment %}
-        {% if collection %}
-          <p>iStock File Collection: <strong>{{ collection }}</strong></p>
+        {% if istock_asset.collection_name %}
+          <p>iStock File Collection: <strong>{{ istock_asset.collection_name }}</strong></p>
         {% endif %}
 
         {% comment %} The previous collection this file was in and when that was changed {% endcomment %}
-        {% if previous_collections %}
-          <p>Previous iStock File Collection(s):
+        {% if istock_asset.previous_collections %}
+          <p>Previous iStock File Collection{{ istock_asset.previous_collections|pluralize }}:
             <ul>
-              {% for collection in previous_collections %}
-                <li>changed to <strong>{{ collection.previous_collection_name }}</strong> @ <strong>{{ collection.previous_collection_date_changed }}</strong></li>
+              {% for collection in istock_asset.previous_collections %}
+                <li>changed to <strong>{{ collection.new_taxonomy_name }}</strong> @ <strong>{{ collection.date_changed }}</strong></li>
               {% endfor %}
             </ul>
           </p>
         {% endif %}
 
         <h2>Contributor</h2>
-        {% comment %} The contributor name/ID {% endcomment %}
-        {% if contributor_names %}
-          <p>Contributor name: (User Id:<strong>{{ contributor_names.userId }}</strong>)
+        {% comment %} The contributor name and ID {% endcomment %}
+        {% if contributor %}
+          <p>Contributor name: (User Id:<strong>{{ contributor.user_id }}</strong>)
             <ul>
-              {% if contributor_names.username %}
-                <li>user: <strong>{{ contributor_names.username }}</strong></li>
+              <li>user: <strong>{{ contributor.username }}</strong></li>
+              {% if contributor.first or contributor.last %}
+                <li>real: <strong>{{ contributor.first|title }} {{ contributor.last|title }}</strong></li>
               {% endif %}
-              {% if contributor_names.first or contributor_names.last %}
-                <li>real: <strong>{{ contributor_names.first|title }} {{ contributor_names.last|title }}</strong></li>
-              {% endif %}
-              {% if contributor_names.studio_name %}
-                <li>studio: <strong>{{ contributor_names.studio_name }}</strong></li>
+              {% if contributor.studio_name %}
+                <li>studio: <strong>{{ contributor.studio_name }}</strong></li>
               {% endif %}
             </ul>
           </p>
         {% endif %}
 
         {% comment %} The file types this contributor is exclusive for {% endcomment %}
-        {% if contributor_exclusivity %}
+        {% if contributor.exclusivity %}
           <p>Exclusive for:
             <ul>
-              {% for exclusivity in contributor_exclusivity %}
-                <li>{{ exclusivity }}</li>
+              {% for exclusivity in contributor.exclusivity %}
+                <li>{{ exclusivity.name }}</li>
               {% endfor %}
             </ul>
           </p>
         {% endif %}
 
         {% comment %} e-mail address of contributor {% endcomment %}
-        {% if contributor_email %}
-          <p>Email Address: <strong>{{ contributor_email }}</strong></p>
+        {% if contributor and  contributor.email %}
+          <p>Email Address: <strong>{{ contributor.email }}</strong></p>
         {% endif %}
 
       </div><!-- well -->

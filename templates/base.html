@@ -19,6 +19,7 @@
   </head>
   <body class="container">
     <div id="content">
+      {% block nav %}{% include 'mongo_status/snippets/navigation_bar_snippet.html' %}{% endblock %}
       {% block breadcrumb %}{% endblock %}
       {% block content %}<p>Yep</p>{% endblock %}
     </div>

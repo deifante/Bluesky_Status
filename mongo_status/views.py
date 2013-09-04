@@ -89,17 +89,15 @@ def get_status(request):
     except StatusCount.DoesNotExist:
         status_counts = None
 
+    try:
+        # This can happen on an empty datastore
+        istock_asset = mysql_access.AbstractFile.objects.get(id=assetId)
+    except mysql_access.AbstractFile.DoesNotExist:
+        istock_asset = None
+
     response_dict = {'query_value'            : assetId,
-                     'is_partner_program'     : mysql_access.is_partner_program(assetId),
-                     'file_type'              : mysql_access.get_file_type(assetId),
-                     'approval_time'          : mysql_access.get_approval_time(assetId),
-                     'upload_time'            : mysql_access.get_upload_time(assetId),
-                     'file_status'            : mysql_access.get_file_status(assetId),
-                     'collection'             : mysql_access.get_collection(assetId),
-                     'previous_collections'   : mysql_access.get_previous_collections(assetId),
-                     'contributor_names'      : mysql_access.get_contributor_names(assetId),
-                     'contributor_exclusivity': mysql_access.get_contributor_exclusivity(assetId),
-                     'contributor_email'      : mysql_access.get_contributor_email(assetId),
+                     'istock_asset'           : istock_asset,
+                     'contributor'            : istock_asset.contributor(),
                      'teams_reporting_data'   : get_teams_reporting_data(assetId),
                      'status_counts'          : status_counts,
                      'historical_basic_status': historical_basic_status,

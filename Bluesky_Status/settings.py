@@ -11,15 +11,21 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'Bluesky_Status',             # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Bluesky_Status',
         'USER': 'deifante',
-        'PASSWORD': 'password',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
-    }
+        'PASSWORD': 'password'
+    },
+    'istock': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'istockphoto',
+        'USER': '***',
+        'PASSWORD': '***',
+        'HOST': '***'
+        }
 }
+
+DATABASE_ROUTERS = ['mongo_status.istock_router.IstockRouter']
 
 # Mongo host will determine the host of the mongo server that we will be doing
 # all our requests to. Only specifying host for now. Everything I currently
@@ -149,6 +155,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'mongo_status',
+    'inspectdb',
 )
 
 # A sample logging configuration. The only tangible logging
