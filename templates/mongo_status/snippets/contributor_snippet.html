@@ -1,0 +1,28 @@
+{% comment %} The contributor details {% endcomment %}
+<p>Contributor name: (User Id:<strong>{{ contributor.user_id }}</strong>)
+  <ul>
+    <li>user: <strong>{{ contributor.username }}</strong></li>
+    {% if contributor.first or contributor.last %}
+      <li>real: <strong>{{ contributor.first|title }} {{ contributor.last|title }}</strong></li>
+    {% endif %}
+    {% if contributor.studio_name %}
+      <li>studio: <strong>{{ contributor.studio_name }}</strong></li>
+    {% endif %}
+  </ul>
+</p>
+
+{% comment %} The file types this contributor is exclusive for {% endcomment %}
+{% if contributor.exclusivity %}
+  <p>Exclusive for:
+    <ul>
+      {% for exclusivity in contributor.exclusivity %}
+        <li>{{ exclusivity.name }}</li>
+      {% endfor %}
+    </ul>
+  </p>
+{% endif %}
+
+{% comment %} e-mail address of contributor {% endcomment %}
+{% if contributor.email %}
+  <p>Email Address: <strong>{{ contributor.email }}</strong></p>
+{% endif %}

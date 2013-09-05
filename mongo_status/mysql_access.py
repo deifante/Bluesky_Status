@@ -6,6 +6,8 @@ import MySQLdb
 
 from django.db import models
 
+from mongo_access import MongoAccess
+
 class AbstractFile(models.Model):
     ABSTRACT_TYPES = {1:'photo', 4:'flash', 7:'vector', 8:'video'}
 
@@ -80,11 +82,31 @@ class AbstractFile(models.Model):
     def contributor(self):
         return User.objects.get(user_id=self.user_id)
 
+    def getty_id(self):
+        mongo_access = MongoAccess()
+        mongo_asset = mongo_access.get_asset(self.id)
+
+        try:
+            return mongo_asset['partnerData']['getty']['partnerId']
+        except (KeyError, TypeError):
+            # KeyError: mongo_asset doesn't have the one of 'partnerData',
+            # 'getty', 'partnerId'
+            # TypeError: mongo_asset is None
+            return None
+
+    def bluesky_status(self):
+        mongo_access = MongoAccess()
+        mongo_asset = mongo_access.get_asset(self.id)
+
+        try:
+            return mongo_asset['partnerData']['getty']['status']
+        except (KeyError, TypeError):
+            return None
+
     class Meta:
         db_table = 'AbstractFile'
         ordering = ['id']
         get_latest_by = 'creation_date'
-
 
 class ExclusivityUser(models.Model):
     id = models.IntegerField(primary_key=True, db_column='ID')
@@ -214,6 +236,27 @@ class User(models.Model):
         The file types this user is exclusive for.
         """
         return ExclusivityUser.objects.filter(user_id=self.user_id)
+
+    def assets(self):
+        """
+        All the abstract files owned by this contributor
+        """
+        return AbstractFile.objects.filter(user_id=self.user_id)
+
+    def shared_asset_count(self):
+        mongo_access = MongoAccess()
+        return mongo_access.get_shared_asset_count(self)
+
+    def error_asset_count(self):
+        mongo_access = MongoAccess()
+        return mongo_access.get_shared_asset_count(self, 'error')
+
+    def pending_asset_count(self):
+        mongo_access = MongoAccess()
+        return mongo_access.get_shared_asset_count(self, 'pending')
+
+    def __unicode__(self):
+        return 'User username: %s; id: %d' % (self.username, self.user_id)
 
     class Meta:
         db_table = 'user'

@@ -159,3 +159,13 @@ class MongoAccess:
             delete = basic_counts['delete'],connection = self.connection.host
             )
         return basic_count
+
+    def get_shared_asset_count(self, contributor, status=None):
+        """
+        Expecting a mysql_access.User model for contributor param
+        """
+        asset_ids = [abstractFile.id for abstractFile in contributor.assets()]
+        if status:
+            return self.assets_collection.find({'assetId': {'$in':asset_ids}, 'partnerData.getty.status':status}).count()
+        else:
+            return self.assets_collection.find({'assetId': {'$in':asset_ids}}).count()

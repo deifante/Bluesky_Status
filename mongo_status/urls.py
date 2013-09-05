@@ -2,9 +2,10 @@ import datetime
 
 from django.conf.urls import patterns, url
 from django.conf import settings
+from django.views.generic.base import TemplateView
 
 from mongo_status import views
-from mongo_status.views import DaySummariesView, CompleteGraphsView, DocumentationView
+from mongo_status.views import DaySummariesView, CompleteGraphsView, ContributorView
 
 urlpatterns = patterns(
     '',
@@ -16,5 +17,7 @@ urlpatterns = patterns(
     url(r'^day_summaries/$', DaySummariesView.as_view(), name='day_summaries'),
     url(r'^complete_queue_status/$', views.complete_queue_status, name='complete_queue_status'),
     url(r'^complete_graphs/$', CompleteGraphsView.as_view(), name='complete_graphs'),
-    url(r'^documentation/$', DocumentationView.as_view(), name='documentation'),
+    url(r'^documentation/$', TemplateView.as_view(template_name = 'mongo_status/documentation.html'), name='documentation'),
+    url(r'^contributor/(?P<contributor_id>\d+)/$', ContributorView.as_view(), name='contributor'),
+    url(r'^contributor/(?P<contributor_id>\d+)/csv/$', views.contributor_csv_export, name='contributor_csv_export'),
 )

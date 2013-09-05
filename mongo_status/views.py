@@ -1,13 +1,16 @@
 import pprint
 import datetime
+import csv
 
 import django.utils.timezone
 from django.conf import settings
-from django.shortcuts import render
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
 from django.views.generic.dates import ArchiveIndexView
 from django.views.generic.base import TemplateView
+from django.views.generic.detail import DetailView
 
-import mysql_access
+from mysql_access import AbstractFile, User
 from mongo_access import MongoAccess
 from splunk_access import SplunkAccess
 from oracle_access import get_teams_reporting_data
@@ -77,11 +80,11 @@ def get_status(request):
 
     splunk_access = SplunkAccess()
     # cause splunk kinda takes a long time if I search for everything
-    # I'm just gonna do the previous 2 weeks and make a separate page
+    # I'm just gonna do the previous 30 days and make a separate page
     # for retrieving *all* the actions from splunk for those
     # that are willing to wait.
-    two_weeks_ago = datetime.datetime.now() + datetime.timedelta(-14)
-    all_splunk_actions = splunk_access.get_actions(assetId, two_weeks_ago)
+    thirty_days_ago = datetime.datetime.now() + datetime.timedelta(-30)
+    all_splunk_actions = splunk_access.get_actions(assetId, thirty_days_ago)
 
     try:
         # This can happen on an empty datastore
@@ -91,8 +94,8 @@ def get_status(request):
 
     try:
         # This can happen on an empty datastore
-        istock_asset = mysql_access.AbstractFile.objects.get(id=assetId)
-    except mysql_access.AbstractFile.DoesNotExist:
+        istock_asset = AbstractFile.objects.get(id=assetId)
+    except AbstractFile.DoesNotExist:
         istock_asset = None
 
     response_dict = {'query_value'            : assetId,
@@ -185,6 +188,22 @@ def day_summary(request, year, month, day):
         }
     return render(request, 'mongo_status/day_summary.html', response_dict)
 
+def contributor_csv_export(request, contributor_id):
+    """
+    Export some useful contributor data
+    """
+    contributor = get_object_or_404(User, user_id=int(contributor_id))
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="contributor-%d.csv"' % contributor.user_id
+
+    writer = csv.writer(response)
+    writer.writerow(['File ID', 'Getty ID', 'Bluesky Status'])
+
+    for asset in contributor.assets():
+        writer.writerow([asset.id, asset.getty_id(), asset.bluesky_status()])
+
+    return response
+
 class DaySummariesView(ArchiveIndexView):
     """
     Generic views are classes since django 1.4.
@@ -202,8 +221,8 @@ class CompleteGraphsView(TemplateView):
     """
     template_name = 'mongo_status/complete_graphs.html'
 
-class DocumentationView(TemplateView):
-    """
-    I don't expect the documentation to require much interaction.
-    """
-    template_name = 'mongo_status/documentation.html'
+class ContributorView(DetailView):
+    pk_url_kwarg = 'contributor_id'
+    model = User
+    context_object_name = 'contributor'
+    template_name = 'mongo_status/contributor.html'

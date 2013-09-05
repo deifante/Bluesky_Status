@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Mongo Status{% endblock %}
+
+{% block content %}
+  {% if contributor %}
+    <div class="row">
+      <div class="span5">
+        <h1>{{ contributor.username }}</h1>
+        <div class="well">
+          {% include 'mongo_status/snippets/contributor_snippet.html' %}
+        </div><!-- well -->
+      </div><!-- span5 -->
+      
+      <div class="span5">
+        <h1>Assets</h1>
+        <div class="well">
+          <p>Total Assets: <strong>{{ contributor.assets.count }}</strong></p>
+          <p>Shared Assets: <strong>{{ contributor.shared_asset_count }}</strong></p>
+          <p>Errored Assets: <strong>{{ contributor.error_asset_count }}</strong></p>
+          <p>Pending Assets: <strong>{{ contributor.pending_asset_count }}</strong></p>
+          <p><a href="{% url 'mongo_status:contributor_csv_export' contributor.user_id %}">Assets as CSV</a></p>
+        </div><!-- well -->
+      </div><!-- span5 -->
+    </div><!-- row -->
+  {% endif %}
+{% endblock %}
+
+
