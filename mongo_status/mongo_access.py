@@ -43,6 +43,13 @@ class MongoAccess:
         """
         return self.assets_collection.find_one({'assetId':assetId})
 
+    def get_assets(self, asset_ids):
+        """
+        Expecting a list of integer assetIds
+        mongo drivers are a little picky about these being actual ints
+        """
+        return self.assets_collection.find({'assetId':{'$in':asset_ids}})
+
     def get_status_counts(self, use_cache = True):
         """
         There are 4 statuses that records are meant to be in the assets

@@ -83,6 +83,9 @@ class AbstractFile(models.Model):
         return User.objects.get(user_id=self.user_id)
 
     def getty_id(self):
+        """
+        This should be get_partner_id with a param of 'getty'
+        """
         mongo_access = MongoAccess()
         mongo_asset = mongo_access.get_asset(self.id)
 

@@ -191,17 +191,40 @@ def day_summary(request, year, month, day):
 def contributor_csv_export(request, contributor_id):
     """
     Export some useful contributor data
+    
+    This used to be *super* naive about getting data from mongo and istock-mysql.
+    Using models and such it would make 2 connections per csv row.
+    Now there are 2 connections per request. taking a 14 second request down to 0.7 seconds in dev.
     """
     contributor = get_object_or_404(User, user_id=int(contributor_id))
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="contributor-%d.csv"' % contributor.user_id
-
     writer = csv.writer(response)
-    writer.writerow(['File ID', 'Getty ID', 'Bluesky Status'])
 
+    mongo_access = MongoAccess()
+    mongo_assets = mongo_access.get_assets([a.id for a in contributor.assets()])
+
+    # mongo constraints ensure there'll be an assetId
+    accumulator = {}
+    for mongo_asset in mongo_assets:
+        accumulator[mongo_asset['assetId']] = mongo_asset
+
+    getty_id = None
+    bluesky_status = None
+    writer.writerow(['File ID', 'Getty ID', 'Bluesky Status', 'iStock Status'])
     for asset in contributor.assets():
-        writer.writerow([asset.id, asset.getty_id(), asset.bluesky_status()])
+        
+        try:
+            # mongo data is nebulous
+            getty_id = int(accumulator[asset.id]['partnerData']['getty']['partnerId'])
+        except:
+            getty_id = None
 
+        try:
+            bluesky_status = accumulator[asset.id]['partnerData']['getty']['status']
+        except:
+            bluesky_status = None
+        writer.writerow([asset.id, getty_id, bluesky_status, asset.status])
     return response
 
 class DaySummariesView(ArchiveIndexView):
