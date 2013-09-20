@@ -11,9 +11,18 @@
           
           <div class="nav-collapse collapse" id="nav-collapse-01">
           <ul class="nav">
-            <li><a href="{% url 'mongo_status:index' %}">System Status</a></li>
-            <li><a href="{% url 'mongo_status:yesterdays_day_summary' %}">Yesterday In Bluesky</a></li>
-            <li><a href="{% url 'mongo_status:day_summaries' %}">Day Summaries</a></li>
+            <li><a href="{% url 'mongo_status:index' %}">System Status</a>
+              <ul>
+                <li><a href="{% url 'mongo_status:exclusion_list' %}">Exclusion List</a></li>
+              </ul>
+            </li>
+            
+            <li><a href="{% url 'mongo_status:yesterdays_day_summary' %}">Yesterday In Bluesky</a>
+              <ul>
+                <li><a href="{% url 'mongo_status:day_summaries' %}">Day Summaries</a></li>
+              </ul>
+            </li>
+
             <li>
               <a href="{% url 'mongo_status:complete_graphs' %}">Complete History Graphs</a>
               <ul>

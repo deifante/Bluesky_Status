@@ -10,7 +10,7 @@ from django.views.generic.dates import ArchiveIndexView
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 
-from mysql_access import AbstractFile, User
+from mysql_access import AbstractFile, User, AgencyContributorXUser
 from mongo_access import MongoAccess
 from splunk_access import SplunkAccess
 from oracle_access import get_teams_reporting_data
@@ -151,6 +151,18 @@ def yesterdays_day_summary(request):
     yesterday = django.utils.timezone.now() - datetime.timedelta(1)
     return day_summary(request, yesterday.year, yesterday.month, yesterday.day)
 
+def exclusion_list(request):
+    """
+    The exclusion list is a list of contributors that will not have any of their files
+    go through bluesky.
+    """
+    agency_ids = [x.user_id for x in AgencyContributorXUser.objects.all()]
+    # These Id's are currently hard coded. in istock php code
+    agency_ids = agency_ids + [2134884, 8198330, 9055499, 7675241, 8186547]
+    agency_users = User.objects.filter(user_id__in=agency_ids).order_by('username')
+    response_dict = {'agency_users':agency_users}
+    return render(request, 'mongo_status/exclusion_list.html', response_dict)
+
 def day_summary(request, year, month, day):
     """
     Display the summary for this day.
@@ -191,7 +203,7 @@ def day_summary(request, year, month, day):
 def contributor_csv_export(request, contributor_id):
     """
     Export some useful contributor data
-    
+
     This used to be *super* naive about getting data from mongo and istock-mysql.
     Using models and such it would make 2 connections per csv row.
     Now there are 2 connections per request. taking a 14 second request down to 0.7 seconds in dev.
@@ -213,7 +225,7 @@ def contributor_csv_export(request, contributor_id):
     bluesky_status = None
     writer.writerow(['File ID', 'Getty ID', 'Bluesky Status', 'iStock Status'])
     for asset in contributor.assets():
-        
+
         try:
             # mongo data is nebulous
             getty_id = int(accumulator[asset.id]['partnerData']['getty']['partnerId'])

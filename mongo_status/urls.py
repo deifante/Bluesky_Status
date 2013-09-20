@@ -20,4 +20,5 @@ urlpatterns = patterns(
     url(r'^documentation/$', TemplateView.as_view(template_name = 'mongo_status/documentation.html'), name='documentation'),
     url(r'^contributor/(?P<contributor_id>\d+)/$', ContributorView.as_view(), name='contributor'),
     url(r'^contributor/(?P<contributor_id>\d+)/csv/$', views.contributor_csv_export, name='contributor_csv_export'),
+    url('^exclusion_list/$', views.exclusion_list, name='exclusion_list'),
 )

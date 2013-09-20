@@ -19,9 +19,9 @@ DATABASES = {
     'istock': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'istockphoto',
-        'USER': '***',
-        'PASSWORD': '***',
-        'HOST': '***'
+        'USER': 'maint',
+        'PASSWORD': 'ngTX6Kupa$c',
+        'HOST': 'reporting2.istockphoto.com'
         }
 }
 
@@ -37,10 +37,15 @@ MONGO_DATABASE = 'bluesky'                 # so I can have a different mongo db 
 
 # Splunk host will determine the splunk server that we expect has the logs
 # relating to the the files we are interested in.
-SPLUNK_HOST     = 'localhost'
+# SPLUNK_HOST     = 'localhost'
+# SPLUNK_PORT     = 8089
+# SPLUNK_USERNAME = 'admin'
+# SPLUNK_PASSWORD = 'changeme'
+
+SPLUNK_HOST     = 'cf-splunk-indexer1.istockphoto.com'
 SPLUNK_PORT     = 8089
-SPLUNK_USERNAME = 'admin'
-SPLUNK_PASSWORD = 'changeme'
+SPLUNK_USERNAME = 'dwalters'
+SPLUNK_PASSWORD = 'fyle73aB!'
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts

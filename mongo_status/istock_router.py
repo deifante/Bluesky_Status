@@ -8,7 +8,7 @@ class IstockRouter(object):
     # db look up.
     ISTOCK_MODELS = ['abstractfile', 'exclusivityuser', 'abstractfiletaxonomy',
                      'abstractfiletaxonomylog', 'abstractfiletypegroup',
-                     'filetaxonomy', 'user']
+                     'filetaxonomy', 'user', 'agencycontributorxuser']
     def db_for_read(self, model, **hints):
         """
         It'd be great if I could just get the

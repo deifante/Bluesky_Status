@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Bluesky Exclusion List{% endblock %}
+
+{% block content %}
+  {% comment %} Show all the contributors that are not valid for Bluesky {% endcomment %}
+
+  <div class="row">
+    <div class="span12">
+      <div class="page-header">
+        <h1>Bluesky Exclusion List</h1>
+      </div>
+      <p>The contributors on this list will never have their files shared via Bluesky.</p>
+    </div>
+  </div>
+
+  <ul>
+    {% for user in agency_users %}
+    <li><a href="{% url 'mongo_status:contributor' user.user_id %}">{{ user.username }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock content %}
