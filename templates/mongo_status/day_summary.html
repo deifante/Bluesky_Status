@@ -3,14 +3,6 @@
 
 {% block title %}{{ day_logged|date:"l F jS, Y" }} in Bluesky{% endblock %}
 
-{% block breadcrumb %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'mongo_status:index' %}">System Status</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'mongo_status:day_summaries' %}">Available Day Summaries</a><span class="divider">/</span></li>
-  <li class="active">{{ day_logged|date:"l F jS, Y" }} in Bluesky </li>
-</ul>
-{% endblock %}
-
 {% block content %}
   <div class="row">
     <div class="span12">

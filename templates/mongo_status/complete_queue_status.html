@@ -3,14 +3,6 @@
 
 {% block title %}Complete Queue Status{% endblock %}
 
-{% block breadcrumb %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'mongo_status:index' %}">System Status</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'mongo_status:complete_graphs' %}">Complete History Graphs</a> <span class="divider">/</span></li>
-  <li class="active">Complete Queue Status</li>
-</ul>
-{% endblock breadcrumb %}
-
 {% block content %}
   {% comment %} Some #'s regarding the basic bluesky queue status {% endcomment %}
   {% include 'mongo_status/snippets/queue_snippet.html' %}
