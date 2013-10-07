@@ -55,9 +55,9 @@
       <p>The above graph displays only the last week of history. A complete history can be found <a href="{% url 'mongo_status:complete_queue_status' %}">here.</a></p>
     {% endif %}
     <ul>
-      <li><strong class="text-delete">Delete</strong> files are files with priority <strong class="text-delete">50-54</strong>. These are files that are no longer valid for sharing.</li>
-      <li><strong class="text-new">New</strong> files are files with priority <strong class="text-new">10-14</strong>. These are files that Bluesky thinks are new to Getty.</li>
-      <li><strong class="text-update">Update</strong> files are files with priority <strong class="text-update">0-4</strong>. These files have been changed on iStock and require an update on Getty.</li>
+      <li><strong class="text-delete">Delete</strong> files are files with priority <strong class="text-delete">50-57</strong>. These are files that are no longer valid for sharing.</li>
+      <li><strong class="text-new">New</strong> files are files with priority <strong class="text-new">10-17</strong>. These are files that Bluesky thinks are new to Getty.</li>
+      <li><strong class="text-update">Update</strong> files are files with priority <strong class="text-update">0-7</strong>. These files have been changed on iStock and require an update on Getty.</li>
       <li>All files counted must have a <strong class="text-pending">'pending'</strong> status and cannot have a <strong class="text-currently-migrating">'migrated'</strong> (partnerData.getty.migrated) flag.</li>
     </ul>
     <p>Files with higher priority are dealt with before files with lower priority.</p>

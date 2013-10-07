@@ -6,15 +6,74 @@
 {% block content %}
 <div class="row">
   <div class="span12">
-    <h1>Bluesky Rule Engine</h1>
-    <p>The 'rule engine' decides which files are valid for Bluesky and which are not. Starting at the top Getty 'Rule Suite' we follow the arrows until we're at the end of a path. If a file passes all of the rules in a suite then that file qualifies for Bluesky distribution. <a href="{% static "mongo_status/misc/RuleEngine.pdf" %}">.pdf</a></p>
+    <h2>Bluesky Overview</h2>
+    <p>Bluesky is a set of API's provided by iStock to assist in transferring content and the meta data for that content. It can filter the content available based on the caller of the API. The system is <strong class="text-error">NOT</strong> RESTful in its design. It's design is more like that of a queue. The user of the API is only meant to ask "what's next?" and later report on whether the transaction was <strong class="text-action-received-success">successful</strong>. Each time the user of the API asks "what's next?", Bluesky will provide the "next most important" thing that is to be addressed. Asset <strong class="text-delete">deactivations</strong> are the most important thing followed by asset <strong class="text-new">creations</strong>. The lowest priority being <strong class="text-update">updates</strong> to existing assets. These <a href="#Priorities">priorities</a> are further broken down by collection.</p>
+    <p>Anytime a file that is watched by Bluesky changes, the system will check to see if any of it's clients are interested in the change, if so the file will be queued up. This happens on a real time basis, so clients that can keep up will have the freshest data available from iStock. Determining which clients are "interested" is done by a <a href="#RuleEngine">Rule Engine</a>.</p>
   </div>
 </div>
 
 <div class="row">
   <div class="span12">
-    <h1>Bluesky Mongo Record</h1>
+    <h3><a name="RuleEngine">Bluesky Rule Engine</a></h3>
+    <p>The 'rule engine' decides which files are valid for Bluesky and which are not. Starting at the top Getty 'Rule Suite' we follow the arrows until we're at the end of a path. If a file passes all of the rules in a suite then that file qualifies for Bluesky distribution. <a href="{% static "mongo_status/misc/RuleEngine.pdf" %}">pdf</a></p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12">
+    <h3><a name="MongoRecord">Bluesky Mongo Record</a></h3>
     <p>A large chunk of the bookkeeping for Bluesky happens in Mongo. <a href="{% static "mongo_status/misc/BlueskyMongoRecord.pdf" %}">This pdf</a> details how the mongo record works.</p>
   </div>
 </div>
+
+<div class="row">
+  <div class="span12">
+    <h3><a name="Priorities">Bluesky Priorities</a></h3>
+    <p>Lower Numbers indicate higher importance.</p>
+    <p>Files that are to be <strong class="text-delete">Deactivated</strong> are sent before <strong class="text-new">New</strong> files. <strong class="text-new">New</strong> file updates are sent before <strong class="text-update">Updates</strong>.</p>
+
+    <ol>
+      <li>
+        <h5 class="text-delete">Deactivate</h5>
+        <ol>
+          <li>Non-Exclusive Signature +</li>
+          <li>Non-exclusive Signature</li>
+          <li>Non-Exclusive Main</li>
+          <li>Vetta</li>
+          <li>Exclusive Signature +</li>
+          <li>Exclusive Signature</li>
+          <li>Exclusive Main</li>
+          <li>Anything else that wasn&#39;t covered above</li>
+        </ol>
+      </li>
+      <li>
+        <h5 class="text-new">New</h5>
+        <ol>
+          <li>Non-Exclusive Signature +</li>
+          <li>Non-exclusive Signature</li>
+          <li>Non-Exclusive Main</li>
+          <li>Vetta</li>
+          <li>Exclusive Signature +</li>
+          <li>Exclusive Signature</li>
+          <li>Exclusive Main</li>
+          <li>Anything else that wasn&#39;t covered above</li>
+        </ol>
+      </li>
+      <li>
+        <h5 class="text-update">Update</h5>
+        <ol>
+          <li>Non-Exclusive Signature +</li>
+          <li>Non-exclusive Signature</li>
+          <li>Non-Exclusive Main</li>
+          <li>Vetta</li>
+          <li>Exclusive Signature +</li>
+          <li>Exclusive Signature</li>
+          <li>Exclusive Main</li>
+          <li>Anything else that wasn&#39;t covered above</li>
+        </ol>
+      </li>
+    </ol>
+
+  </div><!-- span12 -->
+</div><!-- row -->
 {% endblock content %}

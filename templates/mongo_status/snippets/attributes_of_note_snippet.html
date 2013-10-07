@@ -46,13 +46,13 @@
         {% comment %} A reasonable guess of what the last desired operation on this assets was. {% endcomment %}
 
         <p>The last operation attempted on this file was a(n)
-        {% if asset.priority  < 4 %}
+        {% if asset.priority  < 7 %}
           <span class="text-update">update</span> request.</p>
-        {% elif asset.priority < 14 %}
+        {% elif asset.priority < 17 %}
           <span class="text-new">new </span>asset request.</p>
-        {% elif asset.priority < 44 %}
+        {% elif asset.priority < 47 %}
           <span class="text-special"><abbr title="'Special' assets have been assinged a non-standard priority to make them go out faster than everything other than deletes.">'special'</abbr></span> request.</p>
-        {% elif asset.priority < 54 %}
+        {% elif asset.priority < 57 %}
           <span class="text-delete">delete</span> request.</p>
         {% endif %}
 
