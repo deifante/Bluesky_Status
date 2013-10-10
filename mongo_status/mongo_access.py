@@ -37,6 +37,13 @@ class MongoAccess:
         self.assets_collection = self.connection[settings.MONGO_DATABASE].assets
         return self.assets_collection
 
+    def get_exclusion_list_collection(self):
+        """
+        Make a local refernce and return it
+        """
+        self.exclusion_list = self.connection[settings.MONGO_DATABASE].exclusionList
+        return self.exclusion_list
+
     def get_asset(self, assetId):
         """
         Provide the raw data from mongo from a particular asset.
@@ -176,3 +183,13 @@ class MongoAccess:
             return self.assets_collection.find({'assetId': {'$in':asset_ids}, 'partnerData.getty.status':status}).count()
         else:
             return self.assets_collection.find({'assetId': {'$in':asset_ids}}).count()
+
+    def get_exclusion_list(self):
+        """
+        Retrieve the list of users that are not to have their assets shared.
+
+        Unfortunately the exclusion list is distributed among 2 different data
+        stores. Mongo and MySQL.
+        """
+        return self.get_exclusion_list_collection().find()
+

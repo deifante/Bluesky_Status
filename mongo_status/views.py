@@ -154,11 +154,15 @@ def yesterdays_day_summary(request):
 def exclusion_list(request):
     """
     The exclusion list is a list of contributors that will not have any of their files
-    go through bluesky.
+    go through Bluesky.
+
+    Unfortunately it is split between 2 datastores. The entries in MySql serve
+    other application purposes and the ones stored in Mongo are only for the
+    Bluesky exclusion list.
     """
-    agency_ids = [x.user_id for x in AgencyContributorXUser.objects.all()]
-    # These Id's are currently hard coded. in istock php code
-    agency_ids = agency_ids + [2134884, 8198330, 9055499, 7675241, 8186547]
+    mongo_access = MongoAccess()
+    agency_ids = [x.user_id for x in AgencyContributorXUser.objects.all()] + \
+                 [x['userId'] for x in mongo_access.get_exclusion_list()]
     agency_users = User.objects.filter(user_id__in=agency_ids).order_by('username')
     response_dict = {'agency_users':agency_users}
     return render(request, 'mongo_status/exclusion_list.html', response_dict)
