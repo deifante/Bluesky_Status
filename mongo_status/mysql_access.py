@@ -10,7 +10,7 @@ from django.db import models
 from mongo_access import MongoAccess
 
 class AbstractFile(models.Model):
-    ABSTRACT_TYPES = {1:'photo', 4:'flash', 7:'vector', 8:'video'}
+    ABSTRACT_TYPES = {1:'photo', 4:'flash', 7:'vector', 8:'video', 9:'audio'}
 
     id = models.IntegerField(primary_key=True, db_column='ID')
     user_id = models.IntegerField(db_column='UserID')
@@ -62,7 +62,7 @@ class AbstractFile(models.Model):
         """
         return AbstractFile.ABSTRACT_TYPES[int(self.abstract_type_id)]
 
-    def collection_name(self):
+    def collection(self):
         """
         Get the collection this file is in.
 
@@ -73,6 +73,16 @@ class AbstractFile(models.Model):
         except AbstractFileTaxonomy.DoesNotExist:
             return 'Main'
         return FileTaxonomy.objects.get(id=file_taxonomy.file_taxonomy_id).name
+
+    def collection_number(self):
+        """
+        Get the integer for the collection that this file is in.
+        """
+        try:
+            file_taxonomy = AbstractFileTaxonomy.objects.get(abstract_file_id=self.id)
+        except AbstractFileTaxonomy.DoesNotExist:
+            return 1
+        return file_taxonomy.file_taxonomy_id
 
     def previous_collections(self):
         """
@@ -107,6 +117,17 @@ class AbstractFile(models.Model):
         except (KeyError, TypeError):
             return None
 
+    def user(self):
+        return User.objects.get(user_id=self.user_id)
+
+    def is_exclusive(self):
+        """Is this file Exclusive?"""
+        contributor = self.user()
+        for exclusivity in contributor.exclusivity():
+            if exclusivity.abstract_type() == self.abstract_type_id:
+                return True
+        return False
+
     class Meta:
         db_table = 'AbstractFile'
         ordering = ['id']
@@ -127,11 +148,17 @@ class ExclusivityUser(models.Model):
     def name(self):
         return AbstractFileTypeGroup.objects.get(exclusivity_id=self.exclusivity_id).name
 
+    def abstract_type(self):
+        return AbstractFileTypeGroup.objects.get(exclusivity_id=self.exclusivity_id).abstract_type()
+
     class Meta:
         db_table = 'ExclusivityUser'
 
 
 class AbstractFileTaxonomy(models.Model):
+    """
+    Links an Abstract file to a Taxonomy
+    """
     abstract_file_id = models.IntegerField(primary_key=True, db_column='AbstractFileID')
     file_taxonomy_id = models.IntegerField(db_column='FileTaxonomyID')
     admin_id = models.IntegerField(db_column='AdminID')
@@ -164,17 +191,27 @@ class AbstractFileTaxonomyLog(models.Model):
 
 
 class AbstractFileTypeGroup(models.Model):
+
+    # Map Abstract File Type Groups to Abstract Types.
+    TYPE_GROUP_TO_ABSTRACT_TYPE = {1:1, 2:8, 3:9, 6:4, 7:7}
+
     id = models.IntegerField(primary_key=True, db_column='ID')
     name = models.CharField(max_length=10L, db_column='Name')
     default_canister_level_id = models.IntegerField(db_column='DefaultCanisterLevelID')
     number_of_months_to_aggregate_download_counts = models.IntegerField(db_column='NumberOfMonthsToAggregateDownloadCounts')
     exclusivity_id = models.IntegerField(db_column='ExclusivityID')
 
+    def abstract_type(self):
+        return AbstractFileTypeGroup.TYPE_GROUP_TO_ABSTRACT_TYPE[self.id]
+
     class Meta:
         db_table = 'tbl_AbstractFileTypeGroup'
 
 
 class FileTaxonomy(models.Model):
+    """
+    Hold the descriptions of iStock file Taxonomies.
+    """
     id = models.IntegerField(primary_key=True, db_column='ID')
     name = models.CharField(max_length=8L, db_column='Name')
     description = models.CharField(max_length=41L, db_column='Description')
@@ -213,15 +250,15 @@ class User(models.Model):
     notes = models.TextField(blank=True)
     admin_notes = models.TextField(blank=True)
     picture_url = models.CharField(max_length=85L, blank=True)
-    show_profile = models.CharField(max_length=0L)
-    ban_posting = models.CharField(max_length=0L)
-    ban_login = models.CharField(max_length=0L)
-    ban_rating = models.CharField(max_length=0L)
+    show_profile = models.CharField(max_length=1L)
+    ban_posting = models.CharField(max_length=1L)
+    ban_login = models.CharField(max_length=1L)
+    ban_rating = models.CharField(max_length=1L)
     last_ip = models.CharField(max_length=5L, db_column='last_IP')
     num_logins = models.IntegerField()
     customers_default_address_id = models.IntegerField(null=True, blank=True)
     ul_application = models.CharField(max_length=2L)
-    expresslane = models.CharField(max_length=0L)
+    expresslane = models.CharField(max_length=1L)
     heard_about_istock = models.TextField(blank=True)
     color = models.CharField(max_length=3L, blank=True)
     base_color = models.CharField(max_length=3L, blank=True)
@@ -272,5 +309,5 @@ class AgencyContributorXUser(models.Model):
         return 'AgencyContributorXUser id: %d, agency id: %d' % (self.user_id, self.agency_id)
 
     class Meta:
-        db_table = 'tbl_AgencyContributorXUser'        
+        db_table = 'tbl_AgencyContributorXUser'
 # End Generated section

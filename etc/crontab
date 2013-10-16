@@ -37,6 +37,7 @@
 46 * * * * /home/deifante/Projects/Bluesky_Status/manage.py update_basic_stats -o 10.2.241.213
 #
 1 1 * * *  /home/deifante/Projects/Bluesky_Status/manage.py make_day_summary yesterday -o localhost -u admin -p changeme
+13 1 * * *  /home/deifante/Projects/Bluesky_Status/manage.py make_sent_assets_summary yesterday -o localhost -u admin -p changeme
 # live
 2 * * * *  /home/deifante/Projects/Bluesky_Status/manage.py update_detailed_stats -o 10.2.106.180 pending
 15 * * * * /home/deifante/Projects/Bluesky_Status/manage.py update_detailed_stats -o 10.2.106.180 processing
@@ -54,3 +55,4 @@
 48 * * * * /home/deifante/Projects/Bluesky_Status/manage.py update_basic_stats -o 10.2.106.180
 #
 1 0 * * *  /home/deifante/Projects/Bluesky_Status/manage.py make_day_summary yesterday -o cf-splunk-indexer1.istockphoto.com
+13 0 * * * /home/deifante/Projects/Bluesky_Status/manage.py make_sent_assets_summary yesterday -o cf-splunk-indexer1.istockphoto.com

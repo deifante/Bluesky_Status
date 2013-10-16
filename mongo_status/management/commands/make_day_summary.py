@@ -65,7 +65,7 @@ class Command(BaseCommand):
             day_summary = DaySummary(day=day, connection=options['host'])
 
         # Create a Service instance and log in
-        service = client.connect(host=options['host'],port=options['port'],
+        service = client.connect(host=options['host'], port=options['port'],
                                  username=options['username'], password=options['password'])
 
         # The list of searches that we are going to perform.

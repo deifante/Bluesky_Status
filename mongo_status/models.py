@@ -90,7 +90,7 @@ class DaySummary(models.Model):
     I don't think the calling api makes use of all the function calls that we provide, so I think I'll leave space for them in the db but not make a large attempt to actually compute their usage.
 
     This class will be used to store the results of a high level scan of the logging that happened in a particular day.
-    This is a small outline of the logging that is currently in the system.n
+    This is a small outline of the logging that is currently in the system.
 
    | Thing that happend       | logging message                   |
    |--------------------------+-----------------------------------|
@@ -126,4 +126,32 @@ class DaySummary(models.Model):
     class Meta:
         ordering = ['connection', '-day']
         unique_together = ('day', 'connection')
+        get_latest_by = 'day'
+
+class SentAssetSummary(models.Model):
+    """
+    I want to display 'how much' of 'what'. Is being transferred.
+
+    'What' is broken down into the following categories.
+    Photo / Vector / Video.
+
+    Those 'Abstract Types' are further broken down based on their contributors exclusivity status.
+    Exclusive / Non-Exclusive.
+
+    Finally, in those groups we're going to further break things down based on Collection/Taxonomy.
+    Vetta* / Signature + / Signature / Main / Dollar Bin
+    """
+    day = models.DateField(help_text='The day that is summarised', blank=False)
+    connection = models.CharField(max_length=64, help_text='The IP or host name for the splunk server where these results were retrieved from')
+    abstract_type_id = models.IntegerField(help_text='Photo / Vector / Video. From AbstractFile', blank=False)
+    is_exclusive = models.BooleanField(help_text='Exclusive / Non-Exclusive. Based on the Contributor', blank=False)
+    taxonomy_id = models.IntegerField(help_text='Vetta* / Signature + / Signature / Main / Dollar Bin. Vetta only for Exclusive', blank=False)
+    count = models.BigIntegerField(help_text='Count of the files that meet the specs', default=0)
+
+    def __unicode__(self):
+        return '%s for %s on %s' % (type(self), self.day.isoformat(), self.connection)
+
+    class Meta:
+        ordering = ['connection', '-day']
+        unique_together = ('day', 'connection', 'abstract_type_id', 'is_exclusive', 'taxonomy_id')
         get_latest_by = 'day'
