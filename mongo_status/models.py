@@ -152,6 +152,6 @@ class SentAssetSummary(models.Model):
         return '%s for %s on %s' % (type(self), self.day.isoformat(), self.connection)
 
     class Meta:
-        ordering = ['connection', '-day']
+        ordering = ['connection', '-day', 'is_exclusive', 'abstract_type_id', 'taxonomy_id']
         unique_together = ('day', 'connection', 'abstract_type_id', 'is_exclusive', 'taxonomy_id')
         get_latest_by = 'day'

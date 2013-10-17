@@ -15,7 +15,7 @@ from mongo_access import MongoAccess
 from splunk_access import SplunkAccess
 from oracle_access import get_teams_reporting_data
 
-from mongo_status.models import StatusCount, DetailedStatus, BasicStatus, DaySummary
+from mongo_status.models import StatusCount, DetailedStatus, BasicStatus, DaySummary, SentAssetSummary
 
 def index(request):
     """
@@ -203,6 +203,86 @@ def day_summary(request, year, month, day):
         'prev_day'    :prev_day,
         }
     return render(request, 'mongo_status/day_summary.html', response_dict)
+
+def sent_asset_summary(request, year, month, day):
+    """
+    Display a breakdown of what was transferred on a particular day.
+    """
+    day_to_summarise = datetime.datetime(int(year), int(month), int(day))
+    sent_asset_summary = None
+    next_day = None
+    prev_day = None
+
+    try:
+        sent_asset_summary = SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST,
+                                                     day=day_to_summarise)
+    except SentAssetSummary.DoesNotExist:
+        pass
+
+    try:
+        next_day = SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST,
+                                                   day=(day_to_summarise + datetime.timedelta(1)))
+    except SentAssetSummary.DoesNotExist:
+        pass
+
+    try:
+        prev_day = SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST,
+                                                   day=(day_to_summarise - datetime.timedelta(1)))
+    except SentAssetSummary.DoesNotExist:
+        pass
+
+    tree = {
+        'ex_photo_main'           : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=1, taxonomy_id=1),
+        'ex_photo_vetta'          : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=1, taxonomy_id=2),
+        'ex_photo_dollar'         : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=1, taxonomy_id=3),
+        'ex_photo_signature'      : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=1, taxonomy_id=4),
+        'ex_photo_signature_plus' : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=1, taxonomy_id=5),
+
+        'non_ex_photo_main'           : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=1, taxonomy_id=1),
+        'non_ex_photo_vetta'          : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=1, taxonomy_id=2),
+        'non_ex_photo_dollar'         : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=1, taxonomy_id=3),
+        'non_ex_photo_signature'      : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=1, taxonomy_id=4),
+        'non_ex_photo_signature_plus' : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=1, taxonomy_id=5),
+
+        'ex_vector_main'           : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=7, taxonomy_id=1),
+        'ex_vector_vetta'          : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=7, taxonomy_id=2),
+        'ex_vector_dollar'         : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=7, taxonomy_id=3),
+        'ex_vector_signature'      : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=7, taxonomy_id=4),
+        'ex_vector_signature_plus' : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=7, taxonomy_id=5),
+
+        'non_ex_vector_main'           : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=7, taxonomy_id=1),
+        'non_ex_vector_vetta'          : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=7, taxonomy_id=2),
+        'non_ex_vector_dollar'         : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=7, taxonomy_id=3),
+        'non_ex_vector_signature'      : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=7, taxonomy_id=4),
+        'non_ex_vector_signature_plus' : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=7, taxonomy_id=5),
+
+        'ex_video_main'           : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=8, taxonomy_id=1),
+        'ex_video_vetta'          : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=8, taxonomy_id=2),
+        'ex_video_dollar'         : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=8, taxonomy_id=3),
+        'ex_video_signature'      : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=8, taxonomy_id=4),
+        'ex_video_signature_plus' : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=True, abstract_type_id=8, taxonomy_id=5),
+
+        'non_ex_video_main'           : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=8, taxonomy_id=1),
+        'non_ex_video_vetta'          : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=8, taxonomy_id=2),
+        'non_ex_video_dollar'         : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=8, taxonomy_id=3),
+        'non_ex_video_signature'      : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=8, taxonomy_id=4),
+        'non_ex_video_signature_plus' : SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise, is_exclusive=False, abstract_type_id=8, taxonomy_id=5),
+    }
+
+    for leaf in tree:
+        if len(tree[leaf]) == 0:
+            tree[leaf] = 0
+        else:
+            tree[leaf] = tree[leaf][0].count
+
+    response_dict = {
+        'day_logged'         :day_to_summarise,
+        'sent_asset_summary' :sent_asset_summary,
+        'next_day'           :next_day,
+        'prev_day'           :prev_day,
+        'tree'               :tree,
+    }
+    return render(request, 'mongo_status/sent_asset_summary.html', response_dict)
 
 def contributor_csv_export(request, contributor_id):
     """

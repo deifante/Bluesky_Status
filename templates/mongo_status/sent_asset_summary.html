@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Sent Assets on {{ day_logged|date:"l F jS, Y" }}{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="span12">
+      <div class="page-header">
+        <h1>Sent Assets on {{ day_logged|date:"l F jS, Y" }}</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span6 text-left">
+      {% if prev_day %}
+        <p><a href="{% url 'mongo_status:sent_asset_summary' prev_day.0.day.year prev_day.0.day.month prev_day.0.day.day %}"><span class="fui-arrow-left"></span>Previous Day ({{ prev_day.0.day|date:"F jS" }})</a></p>
+      {% else %}
+        <p>No previous day available.</p>
+      {% endif %}
+    </div>
+
+    <div class="span6 text-right">
+      {% if next_day %}
+        <p><a href="{% url 'mongo_status:sent_asset_summary' next_day.0.day.year next_day.0.day.month next_day.0.day.day %}">Next Day ({{ next_day.0.day|date:"F jS" }})<span class="fui-arrow-right"></span></a></p>
+      {% else %}
+        <p>No next day available.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if sent_asset_summary %}
+     <div class="row">
+       <div class="span12">
+         <div id="sentAssetSummary"></div>
+       </div>
+     </div>
+
+     <div class="row">
+       <div class="span12">
+         <div id="sentAssetSummaryColumnChart"></div>
+       </div>
+     </div>
+
+     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+     <script type="text/javascript">
+       google.load('visualization', '1.0', {'packages':['corechart']});
+       google.setOnLoadCallback(drawSentAssetSummaryColumnChart);
+
+       function drawSentAssetSummaryColumnChart()
+       {
+         var data = google.visualization.arrayToDataTable([
+            ['Collection',  'Non-Exclusive Photo',                  'Exclusive Photo',                  'Non-Exclusive Vector',                  'Exclusive Vector',                  'Non-Exclusive Video',                  'Exclusive Video'                 ],
+            ['Main',        {{ tree.non_ex_photo_main }},           {{ tree.ex_photo_main }},           {{ tree.non_ex_vector_main }},           {{ tree.ex_vector_main }},           {{ tree.non_ex_video_main }},           {{ tree.ex_video_main }}          ],
+            ['Vetta',       {{ tree.non_ex_photo_vetta }},          {{ tree.ex_photo_vetta }},          {{ tree.non_ex_vector_vetta }},          {{ tree.ex_vector_vetta }},          {{ tree.non_ex_video_vetta }},          {{ tree.ex_video_vetta }}         ],
+            ['Dollar Bin',  {{ tree.non_ex_photo_dollar }},         {{ tree.ex_photo_dollar }},         {{ tree.non_ex_vector_dollar }},         {{ tree.ex_vector_dollar }},         {{ tree.non_ex_video_dollar }},         {{ tree.ex_video_dollar }}        ],
+            ['Signature',   {{ tree.non_ex_photo_signature }},      {{ tree.ex_photo_signature }},      {{ tree.non_ex_vector_signature }},      {{ tree.ex_vector_signature }},      {{ tree.non_ex_video_signature }},      {{ tree.ex_video_signature }}     ],
+            ['Signature +', {{ tree.non_ex_photo_signature_plus }}, {{ tree.ex_photo_signature_plus }}, {{ tree.non_ex_vector_signature_plus }}, {{ tree.ex_vector_signature_plus }}, {{ tree.non_ex_video_signature_plus }}, {{ tree.ex_video_signature_plus }}],
+          ]);
+
+         var options = {
+           title:'Sent Assets on {{ day_logged|date:"l F jS, Y" }}',
+           textStyle:{color:'#34495E', fontName:'"Lato"', fontSize:14},
+           titleTextStyle:{color:'#34495E', fontName:'"Lato"', fontSize:20},
+           vAxis:{title: '# of of Files Transferred'},
+           hAxis:{title: 'Collection'},
+           height:600,
+           colors:['#3498DB', '#2980B9', // Photo
+                   '#9B59B6', '#8E44AD', // Vector
+                   '#E67E22', '#D35400'] // Video
+         }
+         var tree = new google.visualization.ColumnChart(document.getElementById('sentAssetSummaryColumnChart'));
+         tree.draw(data, options);
+       }
+     </script>
+
+  {% else %}
+     <p>no day summary found for this day! :'(</p>
+  {% endif %}
+{% endblock content %}
