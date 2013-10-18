@@ -43,15 +43,19 @@
          <h4>Why are there two columns for each colour?</h4>
          <p>Sometimes a file will go through a certain part of Bluesky multiple times a day. We boil these down to one incident to see a more accurate representation of 'how much' is doing 'what'.</p>
 
+         <a id="Sent-Metadata"></a>
          <h4>What does <strong class="text-action-sent-metadata">'Sent Metadata'</strong> mean?</h4>
          <p>Bluesky sends the data about the file, like it's title and description, before sending the actual file. Each time iStock sends metadata to Getty like this it is recorded. Sometimes the metadata will be sent more than once per day. To filter these out, we have a separate column for the first time a file's metadata was sent in a day.</p>
 
+         <a id="Errored"></a>
          <h4>What does it mean to be <strong class="text-action-received-error">'Errored'</strong>?</h4>
          <p>These files have had some ingestion problem reported by TEAMS or Vitria and have not been ingested. Sometimes these files will end up being sent to Getty multiple times in a day and have the same error. To filter these out, we have a separate column for the first time a file causes an ingestion issue.</p>
 
+         <a id="Success"></a>
          <h4>What quantifies <strong class="text-action-received-success">'Success'</strong>?</h4>
          <p>When TEAMS tells Vitria to tell iStock that a file has been ingested properly then we call it a Success. Sometimes a file will have multiple runs through Bluesky in one day, to filter these multiple occurrences out we have a second column that only counts the first successful transfer of the day.</p>
 
+         <a id="Sent-Asset"></a>
          <h4>What does <strong class="text-action-sent-asset">'Sent Asset'</strong> mean?</h4>
          <p>Bluesky sends the actual image separate from it's metadata. When TEAMS accesses the provided url to get the actual image it is recorded. Somedays a file will be retrieved multiple times a day. To filter these multiple occurences out, we have a separate colum for the first time a file was sent in a day.</p>
        </div>

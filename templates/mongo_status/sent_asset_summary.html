@@ -33,13 +33,14 @@
   {% if sent_asset_summary %}
      <div class="row">
        <div class="span12">
-         <div id="sentAssetSummary"></div>
+         <div id="sentAssetSummaryColumnChart"></div>
        </div>
      </div>
 
      <div class="row">
-       <div class="span12">
-         <div id="sentAssetSummaryColumnChart"></div>
+       <div class="span12 explanation-paragraphs section-ender">
+         <h4>What is this Graph?</h4>
+         This graph displays the assets that were picked up by <strong>TEAMS</strong> on a specific day. File metadata is sent separately from actual file data as explained <a href="{% url 'mongo_status:day_summary' day_logged.year day_logged.month day_logged.day %}#Sent-Asset">here</a>. This graph only displays metrics on the files that were actually picked up by <strong>TEAMS</strong>. Every 1 is a <strong class="text-action-sent-asset">Sent Asset</strong>.
        </div>
      </div>
 
@@ -60,12 +61,12 @@
           ]);
 
          var options = {
-           title:'Sent Assets on {{ day_logged|date:"l F jS, Y" }}',
+           title:'Sent {{ sum|intcomma }} Assets on {{ day_logged|date:"l F jS, Y" }}',
            textStyle:{color:'#34495E', fontName:'"Lato"', fontSize:14},
            titleTextStyle:{color:'#34495E', fontName:'"Lato"', fontSize:20},
            vAxis:{title: '# of of Files Transferred'},
            hAxis:{title: 'Collection'},
-           height:600,
+           height:700,
            colors:['#3498DB', '#2980B9', // Photo
                    '#9B59B6', '#8E44AD', // Vector
                    '#E67E22', '#D35400'] // Video

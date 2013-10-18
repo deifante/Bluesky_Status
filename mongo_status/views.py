@@ -9,6 +9,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic.dates import ArchiveIndexView
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
+from django.db.models import Sum
 
 from mysql_access import AbstractFile, User, AgencyContributorXUser
 from mongo_access import MongoAccess
@@ -281,6 +282,7 @@ def sent_asset_summary(request, year, month, day):
         'next_day'           :next_day,
         'prev_day'           :prev_day,
         'tree'               :tree,
+        'sum'                :SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST, day=day_to_summarise).aggregate(Sum('count'))['count__sum']
     }
     return render(request, 'mongo_status/sent_asset_summary.html', response_dict)
 
