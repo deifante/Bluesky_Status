@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load tz %}
+
+{% block title %}Day Summaries for {{ month|date:"F, Y" }}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="span12">
+    <div class="page-header">
+      <h1>Available Day Summaries for {{ month|date:"F, Y" }}</h1>
+    </div>
+    <p>Day summaries give a high level look at the output of Bluesky in a particular day.</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="span12">
+    <ul>
+      {% localtime off %}
+        {% for day in date_list %}
+          <li><a href="{% url 'mongo_status:day_summary' day.year day.month day.day %}">{{ day|date:"F jS, Y" }}</a></li>
+        {% endfor %}
+      {% endlocaltime %}
+    </ul>
+  </div>
+</div>
+{% endblock content %}

@@ -6,7 +6,7 @@ import django.utils.timezone
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
-from django.views.generic.dates import ArchiveIndexView
+from django.views.generic.dates import ArchiveIndexView, YearArchiveView, MonthArchiveView
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 from django.db.models import Sum
@@ -333,6 +333,20 @@ class DaySummariesView(ArchiveIndexView):
     date_field = 'day'
     queryset = DaySummary.objects.filter(connection=settings.SPLUNK_HOST)
     context_object_name = 'day_summaries'
+
+class DaySummariesYearView(YearArchiveView):
+    """
+    Using 'queryset' attribute instead of 'model'.
+    """
+    template_name = 'mongo_status/day_summaries_year.html'
+    date_field = 'day'
+    queryset = DaySummary.objects.filter(connection=settings.SPLUNK_HOST)
+
+class DaySummariesMonthView(MonthArchiveView):
+    template_name = 'mongo_status/day_summaries_month.html'
+    date_field = 'day'
+    month_format = '%m'
+    queryset = DaySummary.objects.filter(connection=settings.SPLUNK_HOST)
 
 class CompleteGraphsView(TemplateView):
     """

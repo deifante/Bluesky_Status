@@ -2,6 +2,7 @@ import datetime
 
 from django.db import models
 import django.utils.timezone
+from django.core.urlresolvers import reverse
 
 class StatusCount(models.Model):
     """
@@ -122,6 +123,9 @@ class DaySummary(models.Model):
 
     def __unicode__(self):
         return '%s for %s on %s' % (type(self), self.day.isoformat(), self.connection)
+
+    def get_absolute_url(self):
+        return reverse('mongo_status:day_summary', kwargs={'year':self.day.year, 'month':self.day.month, 'day':self.day.day})
 
     class Meta:
         ordering = ['connection', '-day']
