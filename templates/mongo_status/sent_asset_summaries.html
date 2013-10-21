@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load tz %}
+
+{% block title %}All Sent Assets Summaries{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="span12">
+      <div class="page-header">
+        <h1>All Sent Asset Summaries</h1>
+      </div>
+      <p>Sent Asset Summaries provide a breakdown of the assets that were transferred based on File type, collection and exclusivity.</p>
+      <p>Here is a listing of all available Sent Asset Summaries along with a listing of Sent Asset Summaries by year.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span12">
+      <ul>
+        {% localtime off %}
+          {% for year in date_list %}
+            <li><a href="{% url 'mongo_status:sent_asset_summaries_year' year.year %}">{{ year|date:"Y" }}</a></li>
+          {% endfor %} 
+        {% endlocaltime %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span12">
+      <ul>
+        {% for summary in sent_asset_summaries %}
+          <li><a href="{% url 'mongo_status:sent_asset_summary' summary.day.year summary.day.month summary.day.day %}">{{ summary.day|date:"l F jS, Y" }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endblock content %}

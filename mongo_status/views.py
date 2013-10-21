@@ -205,6 +205,10 @@ def day_summary(request, year, month, day):
         }
     return render(request, 'mongo_status/day_summary.html', response_dict)
 
+def yesterdays_sent_asset_summary(request):
+    yesterday = django.utils.timezone.now() - datetime.timedelta(1)
+    return sent_asset_summary(request, yesterday.year, yesterday.month, yesterday.day)
+
 def sent_asset_summary(request, year, month, day):
     """
     Display a breakdown of what was transferred on a particular day.
@@ -329,7 +333,7 @@ class DaySummariesView(ArchiveIndexView):
     """
     Generic views are classes since django 1.4.
     """
-    template_name ='mongo_status/day_summaries.html'
+    template_name = 'mongo_status/day_summaries.html'
     date_field = 'day'
     queryset = DaySummary.objects.filter(connection=settings.SPLUNK_HOST)
     context_object_name = 'day_summaries'
@@ -347,6 +351,25 @@ class DaySummariesMonthView(MonthArchiveView):
     date_field = 'day'
     month_format = '%m'
     queryset = DaySummary.objects.filter(connection=settings.SPLUNK_HOST)
+
+class SentAssetSummariesView(ArchiveIndexView):
+    template_name = 'mongo_status/sent_asset_summaries.html'
+    date_field = 'day'
+    # Because there are multiple rows per day we've to do some cute work
+    # with the values call and distinct.
+    queryset = SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST).values('day').distinct()
+    context_object_name = 'sent_asset_summaries'
+
+class SentAssetSummariesYearView(YearArchiveView):
+    template_name = 'mongo_status/sent_asset_summaries_year.html'
+    date_field = 'day'
+    queryset = SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST)
+
+class SentAssetSummariesMonthView(MonthArchiveView):
+    template_name = 'mongo_status/sent_asset_summaries_month.html'
+    date_field = 'day'
+    month_format = '%m'
+    queryset = SentAssetSummary.objects.filter(connection=settings.SPLUNK_HOST)
 
 class CompleteGraphsView(TemplateView):
     """
