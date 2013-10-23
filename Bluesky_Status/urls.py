@@ -11,6 +11,8 @@ urlpatterns = patterns(
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^mongo_status_api/', include('mongo_status_api.urls', namespace='mongo_status_api')),
     url(r'^mongo_status/', include('mongo_status.urls', namespace='mongo_status')),
     url(r'^admin/', include(admin.site.urls)),
+
 )
