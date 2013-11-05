@@ -10,8 +10,9 @@ from django.views.generic import TemplateView, View
 from django.views.generic.detail import BaseDetailView
 from django.db.models.query import QuerySet
 from django.forms.models import model_to_dict
-from bson.objectid import ObjectId
+from django.shortcuts import get_object_or_404
 
+from bson.objectid import ObjectId
 
 from mongo_status.mongo_access import MongoAccess
 from mongo_status.models import BasicStatus, StatusCount, DetailedStatus, DaySummary, SentAssetSummary
@@ -132,3 +133,16 @@ class ExclusionListView(JSONResponseMixin, View):
             'object_list':mongo_exclusion_list + mysql_exclusion_list
         }
         return self.render_to_response(context)
+
+class ExclusionDetailView(JSONResponseMixin, View):        
+
+    def get(self, request, *args, **kwargs):
+        mongo_access = MongoAccess()
+        exclusion_user = mongo_access.get_exclusion_list_user(kwargs['userId'])
+        context = {}
+        if exclusion_user:
+            context['exclusion_user'] = exclusion_user
+        else:
+            context['exclusion_user'] = get_object_or_404(AgencyContributorXUser, user_id=int(kwargs['userId']))
+        return self.render_to_response(context)
+        

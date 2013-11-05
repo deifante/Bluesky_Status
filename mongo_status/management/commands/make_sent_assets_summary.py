@@ -52,25 +52,13 @@ class Command(BaseCommand):
             self.stderr.write('Please specify a day (YYYY-MM-DD) or use -h for all options')
             return
 
-        asset_summary = None
         previously_existing_summaries = SentAssetSummary.objects.filter(day=day, connection=options['host'])
         if (not options['force_overwrite']) and previously_existing_summaries:
             # If we didn't use -f and there's already something there, fail and inform
             self.stderr.write('There is already a sent asset summary for %s on %s. Use -f to force overwrite.' % (day.strftime('%Y-%m-%d'), options['host']))
             return
 
-        #\/ \/ Not sure what to do about these guys. It's not just one day summary any more. it's a set of 30 assets summaries.... \/ \/
-        elif options['force_overwrite'] and previously_existing_summary:
-            # if -f was used 'properly' then go ahead and overwrite the pre-existing results
-            asset_summary = previously_existing_summary[0]
-
-        else:
-            # otherwise, continue as normal. create a new SentAssetSummary
-            asset_summary = SentAssetSummary(day=day, connection=options['host'])
-        #^^Not sure what to do about these guys. It's not just one day summary any more. it's a set of 30 assets summaries....^^
-
-
-        # Create a Service instance and log in
+        # Create a Splunk Service instance and log in
         service = client.connect(host=options['host'], port=options['port'],
                                  username=options['username'], password=options['password'])
 
@@ -95,10 +83,7 @@ class Command(BaseCommand):
 
         search_query = str(summariser)
         unique_ids = list(summariser.get_unique_ids())
-        # print 'search_query', search_query
-        # print 'total', len(summariser)
-        #print 'unique', len(unique_ids)
-        # for id in unique_ids[:7]:
+
         for id in unique_ids:
             abstract_file = AbstractFile.objects.get(id=id)
             create_tuple = SentAssetSummary.objects.get_or_create(

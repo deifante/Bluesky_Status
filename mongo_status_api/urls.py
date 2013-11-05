@@ -28,4 +28,5 @@ urlpatterns = patterns(
 
     # Exclusion List Urls
     url(r'^exclusion_list/$', views.ExclusionListView.as_view()),
+    url(r'^exclusion_list/(?P<userId>\d+)/$', views.ExclusionDetailView.as_view()),
 )

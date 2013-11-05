@@ -192,4 +192,10 @@ class MongoAccess:
         stores. Mongo and MySQL.
         """
         return self.get_exclusion_list_collection().find()
-
+        
+    def get_exclusion_list_user(self, userId):
+        """
+        Retrieve a specific exclusion list  user.
+        """
+        exclusion_list = self.get_exclusion_list_collection()
+        return exclusion_list.find_one({'userId':int(userId)})
