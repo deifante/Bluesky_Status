@@ -168,6 +168,17 @@ def exclusion_list(request):
     response_dict = {'agency_users':agency_users}
     return render(request, 'mongo_status/exclusion_list.html', response_dict)
 
+def vip_list(request):
+    """
+    The VIP list is a  list of contributors that have elevated priority in
+    Bluesky.
+    """
+    mongo_access = MongoAccess()
+    vip_ids = [int(x['userId']) for x in mongo_access.get_vip_list()]
+    vip_users = User.objects.filter(user_id__in=vip_ids).order_by('username')
+    response_dict = {'vip_users':vip_users}
+    return render(request, 'mongo_status/vip_list.html', response_dict)
+
 def day_summary(request, year, month, day):
     """
     Display the summary for this day.

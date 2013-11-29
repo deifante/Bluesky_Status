@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Bluesky Vip List{% endblock %}
+
+{% block content %}
+  {% comment %} Show all the contributors that have elevated status in Bluesky {% endcomment %}
+
+  <div class="row">
+    <div class="span12">
+      <div class="page-header">
+        <h1>Bluesky Vip List</h1>
+      </div>
+      <p>The contributors on this list will have 3 points of &quot;extra&quot; priority.</p>
+    </div>
+  </div>
+
+  <ul>
+    {% for user in vip_users %}
+    <li><a href="{% url 'mongo_status:contributor' user.user_id %}">{{ user.username }} ({{ user.user_id }})</a></li>
+    {% endfor %}
+  </ul>
+{% endblock content %}

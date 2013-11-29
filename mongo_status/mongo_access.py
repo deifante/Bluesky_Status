@@ -44,6 +44,13 @@ class MongoAccess:
         self.exclusion_list = self.connection[settings.MONGO_DATABASE].exclusionList
         return self.exclusion_list
 
+    def get_vip_list_collection(self):
+        """
+        Make a local reference and return it
+        """
+        self.vip_list = self.connection[settings.MONGO_DATABASE].specialContributors
+        return self.vip_list
+
     def get_asset(self, assetId):
         """
         Provide the raw data from mongo from a particular asset.
@@ -199,3 +206,10 @@ class MongoAccess:
         """
         exclusion_list = self.get_exclusion_list_collection()
         return exclusion_list.find_one({'userId':int(userId)})
+
+    def get_vip_list(self):
+        """
+        Get the list of users that have elevated priority in bluesky.
+        """
+        vip_list = self.get_vip_list_collection()
+        return vip_list.find()

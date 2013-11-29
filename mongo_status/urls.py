@@ -33,4 +33,5 @@ urlpatterns = patterns(
     url(r'^contributor/(?P<contributor_id>\d+)/$', ContributorView.as_view(), name='contributor'),
     url(r'^contributor/(?P<contributor_id>\d+)/csv/$', views.contributor_csv_export, name='contributor_csv_export'),
     url(r'^exclusion_list/$', views.exclusion_list, name='exclusion_list'),
+    url(r'^vip_list/$', views.vip_list, name='vip_list'),
 )
