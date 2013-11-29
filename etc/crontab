@@ -55,4 +55,4 @@
 48 * * * * /home/deifante/Projects/Bluesky_Status/manage.py update_basic_stats -o 10.2.106.180
 #
 1 0 * * *  /home/deifante/Projects/Bluesky_Status/manage.py make_day_summary yesterday -o cf-splunk-indexer1.istockphoto.com
-13 0 * * * /home/deifante/Projects/Bluesky_Status/manage.py make_sent_assets_summary yesterday -o cf-splunk-indexer1.istockphoto.com
+13 2 * * * /home/deifante/Projects/Bluesky_Status/manage.py make_sent_assets_summary yesterday -o cf-splunk-indexer1.istockphoto.com
