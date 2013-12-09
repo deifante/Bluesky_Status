@@ -41,10 +41,10 @@ class DetailedStatus(models.Model):
     total = models.BigIntegerField(default=0, help_text='A count of all the records of this status in mongo.')
 
     # These should *roughly* add up to all the records that are of the particular status.
-    updates = models.BigIntegerField(default=0, help_text='A count of all the updating records of this status in mongo. These records have their priority set to the update range (0-4).')
-    new = models.BigIntegerField(default=0, help_text='A count of all the new records of this status in mongo. These records have their priority set to the new range (10-14).')
-    special = models.BigIntegerField(default=0, help_text='A count of all the "special" records of this status in mongo. These records have their priority set to the "special" range (40-44).')
-    delete = models.BigIntegerField(default=0, help_text='A count of all the delete records of this status in mongo. These records have their priority set to the delete range (50-54).')
+    updates = models.BigIntegerField(default=0, help_text='A count of all the updating records of this status in mongo. These records have their priority set to the update range (0-9).')
+    new = models.BigIntegerField(default=0, help_text='A count of all the new records of this status in mongo. These records have their priority set to the new range (10-19).')
+    special = models.BigIntegerField(default=0, help_text='A count of all the "special" records of this status in mongo. These records have their priority set to the "special" range (40-49).')
+    delete = models.BigIntegerField(default=0, help_text='A count of all the delete records of this status in mongo. These records have their priority set to the delete range (50-59).')
 
     # These attributes are independant of the previous 4. Don't expect them to add up @ all
     legacy_migration = models.BigIntegerField(default=0, help_text='Files that were previously migrated via methods other than Bluesky.')

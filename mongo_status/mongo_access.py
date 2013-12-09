@@ -114,10 +114,10 @@ class MongoAccess:
         status_details = \
             {'generation_time'  : django.utils.timezone.now().strftime('%A %B %d %Y %H:%M:%S'),
              'total'            : self.assets_collection.find({'partnerData.getty.status':status}, slave_okay=True, await_data=False).count(),
-             'updates'          : self.assets_collection.find({'partnerData.getty.status':status, 'priority':{'$gte': 0,  '$lte': 4}}, slave_okay=True, await_data=False).count(),
-             'new'              : self.assets_collection.find({'partnerData.getty.status':status, 'priority':{'$gte': 10, '$lte': 14}}, slave_okay=True, await_data=False).count(),
-             'special'          : self.assets_collection.find({'partnerData.getty.status':status, 'priority':{'$gte': 40, '$lte': 44}}, slave_okay=True, await_data=False).count(),
-             'delete'           : self.assets_collection.find({'partnerData.getty.status':status, 'priority':{'$gte': 50, '$lte': 54}}, slave_okay=True, await_data=False).count(),
+             'updates'          : self.assets_collection.find({'partnerData.getty.status':status, 'priority':{'$gte': 0,  '$lte': 9}}, slave_okay=True, await_data=False).count(),
+             'new'              : self.assets_collection.find({'partnerData.getty.status':status, 'priority':{'$gte': 10, '$lte': 19}}, slave_okay=True, await_data=False).count(),
+             'special'          : self.assets_collection.find({'partnerData.getty.status':status, 'priority':{'$gte': 40, '$lte': 49}}, slave_okay=True, await_data=False).count(),
+             'delete'           : self.assets_collection.find({'partnerData.getty.status':status, 'priority':{'$gte': 50, '$lte': 59}}, slave_okay=True, await_data=False).count(),
              'legacy_migration' : self.assets_collection.find({'partnerData.getty.status':status, 'partnerData.getty.legacyMigration':{'$exists':True}}, slave_okay=True, await_data=False).count(),
              'migrated'         : self.assets_collection.find({'partnerData.getty.status':status, 'partnerData.getty.migrated':{'$exists':True}}, slave_okay=True, await_data=False).count(),
              'hand_selected'    : self.assets_collection.find({'partnerData.getty.status':status, 'partnerData.getty.handSelected':{'$exists':True}}, slave_okay=True, await_data=False).count(),
@@ -165,14 +165,14 @@ class MongoAccess:
         there.
 
         Getting all this information takes on the order of 100 seconds. It is
-        not recommened for a web request. The results will be logged an the
+        not recommened for a web request. The results will be logged and the
         data used later.
         """
         basic_counts = \
             {
-            'update' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':0,  '$lte':4}}, slave_okay=True, await_data=True).count(),
-            'new'    : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':10, '$lte':14}}, slave_okay=True, await_data=True).count(),
-            'delete' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':50, '$lte':54}}, slave_okay=True, await_data=True).count()
+                'update' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':0,  '$lte':9}}, slave_okay=True, await_data=True).count(),
+                'new'    : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':10, '$lte':19}}, slave_okay=True, await_data=True).count(),
+                'delete' : self.assets_collection.find({'partnerData.getty.status':'pending', 'partnerData.getty.migrated':{'$exists':False}, 'priority':{'$gte':50, '$lte':59}}, slave_okay=True, await_data=True).count()
             }
 
         basic_count = BasicStatus.objects.create(
