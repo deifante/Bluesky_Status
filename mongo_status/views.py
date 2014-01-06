@@ -101,7 +101,7 @@ def get_status(request):
 
     response_dict = {'query_value'            : assetId,
                      'istock_asset'           : istock_asset,
-                     'contributor'            : istock_asset.contributor(),
+                     'contributor'            : istock_asset.contributor() if istock_asset else None,
                      'teams_reporting_data'   : get_teams_reporting_data(assetId),
                      'status_counts'          : status_counts,
                      'historical_basic_status': historical_basic_status,

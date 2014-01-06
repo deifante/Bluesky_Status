@@ -177,7 +177,7 @@ class MongoAccess:
 
         basic_count = BasicStatus.objects.create(
             update = basic_counts['update'], new = basic_counts['new'],
-            delete = basic_counts['delete'],connection = self.connection.host
+            delete = basic_counts['delete'], connection = self.connection.host
             )
         return basic_count
 
@@ -199,7 +199,7 @@ class MongoAccess:
         stores. Mongo and MySQL.
         """
         return self.get_exclusion_list_collection().find()
-        
+
     def get_exclusion_list_user(self, userId):
         """
         Retrieve a specific exclusion list  user.
